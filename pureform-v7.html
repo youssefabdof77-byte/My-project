@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUREFORM — Risen Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ════════ TOKENS ════════ */
+[data-theme="light"]{
+  --bg:#F6F2EB; --bg2:#FEFCF9; --bg3:#EDE8DC; --bg4:#E2DBD0;
+  --surface:#FFFFFF; --ink:#0F1A12; --ink2:#2B3A2D; --ink3:#5E7060; --ink4:#9BAA99;
+  --border:rgba(0,0,0,.08); --sh:rgba(15,35,24,.1); --sh2:rgba(15,35,24,.2);
+  --nav:#0C1E10; --hero:#0C1E10;
+}
+[data-theme="dark"]{
+  --bg:#0B1610; --bg2:#101E14; --bg3:#152019; --bg4:#1C2D21;
+  --surface:#172018; --ink:#EDE8DC; --ink2:#C5D3BC; --ink3:#7A9A78; --ink4:#4A6648;
+  --border:rgba(255,255,255,.07); --sh:rgba(0,0,0,.3); --sh2:rgba(0,0,0,.55);
+  --nav:#06100A; --hero:#06100A;
+}
+:root{
+  --g900:#0C1E10; --g800:#1B4332; --g700:#2D6A4F; --g600:#3D8B65;
+  --g500:#52B788; --g300:#95D5B2; --g100:#D8F3DC; --g50:#F0FAF3;
+  --gold:#C8963E; --gold2:#DEB068; --gold3:#F5D9A8;
+  --red:#C0392B;
+  --r-xs:8px; --r-sm:12px; --r:20px; --r-lg:28px; --r-xl:40px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --t:.18s var(--ease); --tm:.32s var(--ease); --ts:.55s var(--ease);
+}
+/* ════════ RESET ════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--ink);direction:rtl;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background var(--tm),color var(--tm)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg3)}
+::-webkit-scrollbar-thumb{background:var(--g600);border-radius:2px}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+img{display:block;max-width:100%}
+
+/* ════════ POPUP ════════ */
+#popup{position:fixed;inset:0;z-index:9999;background:rgba(4,10,6,.8);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:1rem}
+#popup.closing{opacity:0;transition:opacity .3s}
+#popup.gone{display:none}
+.pw{width:min(500px,100%);background:var(--bg2);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.4);border:1px solid var(--border);animation:pwIn .5s var(--ease);position:relative}
+@keyframes pwIn{from{opacity:0;transform:scale(.88) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.pw-top{background:linear-gradient(135deg,var(--g900),var(--g700));padding:1.8rem 1.8rem 1.4rem;text-align:center;position:relative}
+.pw-logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;letter-spacing:6px;color:#fff;margin-bottom:.15rem}
+.pw-by{font-size:.58rem;letter-spacing:6px;text-transform:uppercase;color:var(--gold2);font-weight:300}
+.pw-leaf1,.pw-leaf2{position:absolute;font-size:3rem;opacity:.1;pointer-events:none}
+.pw-leaf1{top:-5px;right:10px;transform:rotate(20deg)}
+.pw-leaf2{bottom:-5px;left:10px;transform:rotate(-30deg)}
+.pw-body{padding:1.8rem 1.6rem 2rem}
+
+/* Step dots */
+.sdots{display:flex;justify-content:center;gap:.4rem;margin-bottom:1.6rem}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--bg4);transition:all var(--t)}
+.sdot.on{background:var(--g600);width:24px;border-radius:4px}
+
+/* Steps */
+.step{display:none}
+.step.on{display:block;animation:sIn .3s var(--ease)}
+@keyframes sIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.step-h{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--ink);margin-bottom:1.1rem;line-height:1.2}
+.step-h small{font-size:.75rem;font-family:'Tajawal',sans-serif;color:var(--ink3);font-weight:300;display:block;margin-top:.2rem}
+
+/* Input */
+.p-in{width:100%;padding:.9rem 1.1rem;border:2px solid var(--border);border-radius:var(--r);font-family:'Tajawal',sans-serif;font-size:1.05rem;background:var(--bg3);color:var(--ink);text-align:center;outline:none;transition:border-color var(--t);margin-bottom:1.2rem;letter-spacing:.3px}
+.p-in:focus{border-color:var(--g500)}
+.p-in.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-7px)}70%{transform:translateX(7px)}}
+
+/* Choice buttons */
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem}
+.c3{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.2rem}
+.cf{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem;max-height:340px;overflow-y:auto}
+.cbtn{padding:.85rem .5rem;border:2px solid var(--border);border-radius:var(--r-lg);background:var(--bg3);display:flex;flex-direction:column;align-items:center;gap:.3rem;font-size:.84rem;font-weight:600;color:var(--ink2);transition:all var(--t);cursor:pointer;text-align:center}
+.cbtn .em{font-size:1.8rem;line-height:1}
+.cbtn:hover{border-color:var(--g500);color:var(--g700);background:var(--g50)}
+.cbtn.on{border-color:var(--g700);background:var(--g700);color:#fff}
+[data-theme="dark"] .cbtn:hover{background:var(--bg4)}
+[data-theme="dark"] .cbtn.on{background:var(--g600);border-color:var(--g500)}
+.crow{display:flex;align-items:center;gap:.85rem;padding:.8rem 1rem;border:2px solid var(--border);border-radius:var(--r);background:var(--bg3);font-size:.88rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:all var(--t)}
+.crow .em{font-size:1.4rem;flex-shrink:0}
+.crow .crow-txt{flex:1}
+.crow .crow-sub{font-size:.72rem;font-weight:300;color:var(--ink3)}
+.crow:hover{border-color:var(--g500);background:var(--g50)}
+.crow.on{border-color:var(--g700);background:var(--g700);color:#fff}
+[data-theme="dark"] .crow:hover{background:var(--bg4)}
+[data-theme="dark"] .crow.on{background:var(--g600);border-color:var(--g500)}
+
+/* Popup CTA */
+.pcta{width:100%;padding:1rem;background:var(--g700);color:#fff;border-radius:var(--r);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all var(--t)}
+.pcta:hover{background:var(--g600);transform:translateY(-1px);box-shadow:0 8px 24px var(--sh2)}
+
+/* Welcome step */
+.w-box{text-align:center;padding:.5rem 0}
+.w-em{font-size:4rem;display:block;margin-bottom:.6rem;animation:wobble 1s ease}
+@keyframes wobble{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.w-name{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--g700);margin-bottom:.4rem}
+.w-sub{font-size:.88rem;color:var(--ink3);font-weight:300;margin-bottom:1.2rem;line-height:1.6}
+.w-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.2rem;margin-bottom:1.3rem;text-align:right}
+.w-card-lbl{font-size:.64rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.w-card-txt{font-size:.85rem;color:var(--ink2);font-weight:300;line-height:1.65}
+.w-card-txt strong{color:var(--g700);font-weight:700}
+
+/* ════════ NAV ════════ */
+#nav{position:fixed;top:0;left:0;right:0;height:62px;background:var(--nav);border-bottom:1px solid rgba(255,255,255,.06);z-index:500;display:flex;align-items:center;padding:0 4%;justify-content:space-between;transition:background var(--tm)}
+.n-brand{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;letter-spacing:4px;color:#fff;cursor:pointer;line-height:1;display:flex;flex-direction:column}
+.n-brand small{font-family:'Tajawal',sans-serif;font-size:.43rem;font-weight:300;letter-spacing:7px;color:var(--gold2);text-transform:uppercase}
+.n-links{display:flex;align-items:center;gap:1.6rem}
+.n-lnk{font-size:.8rem;font-weight:500;color:rgba(255,255,255,.65);position:relative;padding-bottom:2px;cursor:pointer;transition:color var(--t);white-space:nowrap}
+.n-lnk::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--gold2);transform:scaleX(0);transform-origin:right;transition:transform var(--t)}
+.n-lnk:hover,.n-lnk.cur{color:#fff}
+.n-lnk:hover::after,.n-lnk.cur::after{transform:scaleX(1)}
+.n-right{display:flex;align-items:center;gap:.7rem}
+.n-wa{display:flex;align-items:center;gap:.4rem;background:var(--gold);color:var(--g900);padding:.42rem .9rem;border-radius:20px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all var(--t);white-space:nowrap}
+.n-wa:hover{background:var(--gold2);transform:translateY(-1px)}
+#theme-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all var(--t);cursor:pointer;flex-shrink:0}
+#theme-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+[data-theme="dark"] .ico-sun{display:inline}[data-theme="dark"] .ico-moon{display:none}
+[data-theme="light"] .ico-sun{display:none}[data-theme="light"] .ico-moon{display:inline}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.ham span{display:block;width:21px;height:1.5px;background:#fff;border-radius:1px;transition:all .28s}
+.ham.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.ham.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.ham.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+#drawer{position:fixed;top:62px;left:0;right:0;bottom:0;background:var(--nav);z-index:499;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;transform:translateX(100%);transition:transform var(--tm)}
+#drawer.open{transform:translateX(0)}
+#drawer .n-lnk{font-size:1.35rem;color:rgba(255,255,255,.8)}
+#bar{display:none;margin-top:62px;background:linear-gradient(90deg,var(--g900),var(--g800));padding:.6rem 4%;font-size:.8rem;color:rgba(255,255,255,.7);text-align:center;border-bottom:1px solid rgba(255,255,255,.05)}
+#bar.on{display:block}
+#bar strong{color:var(--gold2)}
+
+/* ════════ WA FAB ════════ */
+/* WA FAB handled in separate block below */
+
+
+/* ════════ HERO ════════ */
+.hero{margin-top:62px;min-height:calc(100dvh - 62px);background:var(--hero);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.orb:nth-child(1){width:min(550px,90vw);height:min(550px,90vw);background:radial-gradient(circle,rgba(82,183,136,.15),transparent 70%);top:-80px;right:-80px}
+.orb:nth-child(2){width:min(380px,70vw);height:min(380px,70vw);background:radial-gradient(circle,rgba(200,150,62,.09),transparent 70%);bottom:-50px;left:5%}
+.orb:nth-child(3){width:min(280px,55vw);height:min(280px,55vw);background:radial-gradient(circle,rgba(45,106,79,.22),transparent 70%);top:45%;left:40%}
+.hero-c{position:relative;z-index:2;text-align:center;padding:2.5rem 1.2rem;max-width:780px;margin:0 auto}
+.hero-lbl{display:inline-flex;align-items:center;gap:.5rem;font-size:.63rem;font-weight:500;letter-spacing:6px;text-transform:uppercase;color:var(--gold2);margin-bottom:1.3rem;opacity:0;animation:fup .7s .1s var(--ease) forwards}
+.hero-lbl::before,.hero-lbl::after{content:'';width:18px;height:1px;background:var(--gold2);opacity:.5}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,14vw,9rem);font-weight:700;color:#fff;letter-spacing:clamp(4px,2vw,14px);line-height:.85;margin-bottom:.8rem;opacity:0;animation:fup .7s .22s var(--ease) forwards}
+.hero-tagline{font-size:clamp(.7rem,.95vw,.8rem);font-weight:300;letter-spacing:5px;text-transform:uppercase;color:var(--g300);margin-bottom:2.2rem;opacity:0;animation:fup .7s .35s var(--ease) forwards}
+.hero-verse{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);padding:1.4rem clamp(.9rem,4vw,1.8rem);margin-bottom:1.8rem;opacity:0;animation:fup .7s .48s var(--ease) forwards}
+.hero-verse p{font-family:'Cormorant Garamond',serif;font-size:clamp(.95rem,2.2vw,1.35rem);font-style:italic;color:#ddd;line-height:2}
+.hero-verse cite{display:block;margin-top:.4rem;font-style:normal;font-family:'Tajawal',sans-serif;font-size:.64rem;letter-spacing:2px;color:var(--gold2)}
+.hero-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:2.2rem;opacity:0;animation:fup .7s .6s var(--ease) forwards}
+.hbadge{display:flex;align-items:center;gap:.38rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:30px;padding:.35rem .85rem;font-size:.73rem;color:rgba(255,255,255,.8)}
+.hbadge i{color:var(--g300);font-size:.75rem}
+.hero-btns{display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;opacity:0;animation:fup .7s .72s var(--ease) forwards}
+@keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* Scroll arrow */
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.3rem;opacity:.5;animation:bounce 2s infinite}
+.scroll-hint i{font-size:1.1rem;color:#fff}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(5px)}}
+
+/* ════════ BUTTONS ════════ */
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.78rem 1.8rem;border-radius:50px;font-family:'Tajawal',sans-serif;font-size:.9rem;font-weight:700;transition:all var(--t);cursor:pointer;border:none;white-space:nowrap}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--g900)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(200,150,62,.4)}
+.btn-ghost{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:#fff}
+.btn-ghost:hover{border-color:var(--gold2);color:var(--gold2)}
+.btn-green{background:var(--g700);color:#fff}
+.btn-green:hover{background:var(--g600);transform:translateY(-2px);box-shadow:0 10px 28px var(--sh2)}
+.btn-wa{background:#25D366;color:#fff}
+.btn-wa:hover{background:#1fb559;transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,211,102,.35)}
+
+/* ════════ LAYOUT ════════ */
+.sec{padding:clamp(3rem,6vw,5.5rem) clamp(1rem,5%,5%)}
+.bg-warm{background:var(--bg2)}
+.bg-main{background:var(--bg)}
+.mw{max-width:1180px;margin-inline:auto}
+.mw-md{max-width:860px;margin-inline:auto}
+.sec-lbl{display:block;font-size:.62rem;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.sec-h{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--g700);line-height:1.1}
+.sec-h em{font-style:italic;color:var(--g500)}
+.sec-h.lgt{color:#fff}
+.sec-h.lgt em{color:var(--g300)}
+.sec-d{font-size:.87rem;font-weight:300;color:var(--ink3);margin-top:.4rem;line-height:1.6}
+.sec-hdr{margin-bottom:clamp(1.8rem,4vw,3rem)}
+.sec-hdr.c{text-align:center}
+.sec-hdr.c .sec-d{max-width:460px;margin-inline:auto;margin-top:.4rem}
+
+/* Reveal */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv.in{opacity:1;transform:translateY(0)}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}.rv.d4{transition-delay:.4s}
+
+/* ════════ RECS STRIP ════════ */
+.recs-sec{padding:clamp(2rem,4vw,3.5rem) clamp(1rem,5%,5%);background:var(--bg2);border-bottom:1px solid var(--border)}
+.recs-hdr{display:flex;align-items:center;gap:.8rem;margin-bottom:1.8rem}
+.recs-av{width:42px;height:42px;border-radius:50%;background:var(--g800);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.recs-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--g700)}
+.recs-title span{color:var(--gold)}
+.recs-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:.8rem;margin-bottom:1.1rem}
+.ri{display:flex;align-items:center;gap:.65rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .9rem;cursor:pointer;transition:all var(--t)}
+.ri:hover{border-color:var(--g500);transform:translateY(-2px);box-shadow:0 6px 18px var(--sh)}
+.ri-em{font-size:1.4rem;flex-shrink:0}
+.ri-nm{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:600;color:var(--ink);line-height:1.2}
+.ri-pr{font-size:.7rem;color:var(--ink3);font-weight:300}
+.why-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;font-size:.83rem;color:var(--ink2);font-weight:300;line-height:1.65;margin-bottom:.75rem}
+.why-box strong{color:var(--g700);font-weight:700}
+.cross-box{background:var(--bg3);border-radius:var(--r-sm);padding:.8rem 1.1rem;font-size:.82rem;color:var(--ink2);font-weight:300;line-height:1.6}
+.cross-box a{color:var(--g700);font-weight:600}
+
+/* ════════ PRODUCT CARDS ════════ */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:clamp(.8rem,2vw,1.4rem)}
+
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .3s var(--ease);position:relative;display:flex;flex-direction:column}
+.pcard:hover{transform:translateY(-7px);box-shadow:0 24px 60px var(--sh2);border-color:var(--g300)}
+
+/* Card top — gradient bg with icon */
+.pc-top{aspect-ratio:4/3;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pc-em{font-size:clamp(4rem,10vw,5.5rem);z-index:2;position:relative;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));transition:transform .3s var(--ease)}
+.pcard:hover .pc-em{transform:scale(1.1) rotate(-5deg)}
+.pc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,15,8,.75) 0%,transparent 55%);z-index:1;transition:opacity .3s}
+.pc-badges{position:absolute;top:11px;right:11px;z-index:3;display:flex;flex-direction:column;gap:.35rem;align-items:flex-end}
+.pb-best{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--g900);padding:.25rem .65rem;border-radius:20px;font-size:.62rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;box-shadow:0 3px 10px rgba(200,150,62,.4)}
+.pb-hot{background:rgba(192,57,43,.9);color:#fff;backdrop-filter:blur(4px);padding:.22rem .55rem;border-radius:14px;font-size:.6rem;font-weight:700;display:flex;align-items:center;gap:.25rem}
+.pb-new{background:rgba(82,183,136,.9);color:#fff;backdrop-filter:blur(4px);padding:.22rem .55rem;border-radius:14px;font-size:.6rem;font-weight:700}
+.pc-stars-overlay{position:absolute;bottom:10px;right:11px;z-index:3;color:var(--gold3);font-size:.72rem;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.pc-discount{position:absolute;bottom:10px;left:11px;z-index:3;background:var(--red);color:#fff;padding:.22rem .6rem;border-radius:12px;font-size:.64rem;font-weight:700}
+
+/* Card body */
+.pc-body{padding:clamp(.9rem,2vw,1.2rem);flex:1;display:flex;flex-direction:column}
+.pc-kit{font-size:.6rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:.25rem}
+.pc-name{font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,2.5vw,1.25rem);font-weight:600;color:var(--ink);margin-bottom:.65rem;line-height:1.2;flex:1}
+
+/* Ingredient pills on card */
+.pc-pills{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.75rem}
+.pc-pill{background:var(--g100);color:var(--g800);border:1px solid rgba(82,183,136,.2);padding:.15rem .5rem;border-radius:6px;font-size:.63rem;font-weight:500}
+[data-theme="dark"] .pc-pill{background:rgba(82,183,136,.12);color:var(--g300);border-color:rgba(82,183,136,.15)}
+.pc-benefits{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.75rem}
+.pc-ben{display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--ink3);font-weight:300}
+.pc-ben::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--g500);flex-shrink:0}
+
+/* Card footer */
+.pc-foot{padding-top:.75rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pc-prices .pc-price{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--g700);line-height:1}
+.pc-prices .pc-price sup{font-size:.68rem;font-family:'Tajawal',sans-serif;font-weight:400;color:var(--ink3)}
+.pc-prices .pc-orig{font-size:.72rem;color:var(--ink4);text-decoration:line-through;font-weight:300}
+.pc-action{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--g700);color:#fff;font-size:.8rem;transition:all var(--t);flex-shrink:0}
+.pcard:hover .pc-action{background:var(--g600);transform:scale(1.1)}
+
+/* ════════ TRUST STRIP ════════ */
+.trust-strip{background:var(--g900);padding:clamp(2rem,4vw,3rem) clamp(1rem,5%,5%);display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
+.tc{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.4rem;padding:clamp(.8rem,2vw,1.1rem);border-radius:var(--r);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);transition:all var(--t)}
+.tc:hover{background:rgba(255,255,255,.07)}
+.tc i{font-size:1.3rem;color:var(--gold2)}
+.tc h5{font-size:.87rem;font-weight:700;color:#fff}
+.tc p{font-size:.7rem;color:var(--g300);font-weight:300}
+
+/* ════════ SHIPPING ════════ */
+.ship-sec{background:linear-gradient(135deg,var(--g800),var(--g900));padding:clamp(3rem,5vw,4.5rem) clamp(1rem,5%,5%)}
+.ship-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;max-width:1180px;margin-inline:auto}
+.sc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);padding:1.6rem 1.2rem;text-align:center;transition:all var(--t)}
+.sc:hover{background:rgba(255,255,255,.09);transform:translateY(-3px)}
+.sc-i{font-size:2.2rem;display:block;margin-bottom:.7rem}
+.sc h4{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.3rem}
+.sc p{font-size:.77rem;color:var(--g300);font-weight:300;line-height:1.5}
+
+/* ════════ STATEMENT ════════ */
+.stmt-sec{background:var(--g800);padding:clamp(4rem,7vw,6rem) clamp(1rem,5%,5%);text-align:center;position:relative;overflow:hidden}
+.stmt-sec::before{content:'"';position:absolute;font-family:'Cormorant Garamond',serif;font-size:clamp(10rem,25vw,22rem);line-height:1;color:rgba(255,255,255,.025);top:-50px;left:50%;transform:translateX(-50%);pointer-events:none}
+.stmt-q{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,3.5vw,2.6rem);font-style:italic;color:#fff;line-height:1.65;max-width:700px;margin-inline:auto;position:relative}
+.stmt-q em{font-style:normal;color:var(--gold3)}
+.stmt-src{font-size:.66rem;letter-spacing:5px;text-transform:uppercase;color:var(--g300);margin-top:1.2rem;display:block}
+
+/* ════════ PAGE HERO ════════ */
+.ph{margin-top:62px;padding:clamp(3rem,6vw,5rem) clamp(1rem,5%,5%) clamp(2.5rem,5vw,4rem);background:var(--hero);position:relative;overflow:hidden}
+.ph::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 0%,rgba(82,183,136,.12) 0%,transparent 60%);pointer-events:none}
+.ph-in{position:relative;z-index:1;max-width:560px}
+.ph-lb{font-size:.63rem;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--gold2);margin-bottom:.7rem;display:block}
+.ph-h{font-family:'Cormorant Garamond',serif;font-size:clamp(2.3rem,7vw,5rem);font-weight:700;color:#fff;letter-spacing:2px;line-height:.9;margin-bottom:.8rem}
+.ph-d{font-size:.9rem;font-weight:300;color:var(--g300);line-height:1.6}
+
+/* ════════ BEAUTY — KIT TABS ════════ */
+.kit-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2.2rem;overflow-x:auto;padding-bottom:4px;-ms-overflow-style:none;scrollbar-width:none}
+.kit-tabs::-webkit-scrollbar{display:none}
+.ktab{display:flex;align-items:center;gap:.38rem;padding:.5rem 1rem;border-radius:30px;border:1.5px solid var(--border);font-size:.79rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all var(--t);white-space:nowrap;background:var(--surface)}
+.ktab:hover{border-color:var(--g500);color:var(--g600)}
+.ktab.on{background:var(--g800);color:#fff;border-color:var(--g800)}
+.kit-panel{display:none}
+.kit-panel.on{display:block;animation:pIn .3s var(--ease)}
+@keyframes pIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Product rows */
+.prows{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);box-shadow:0 2px 12px var(--sh)}
+.prow{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;background:var(--surface);padding:1.3rem 1.4rem;cursor:pointer;transition:all var(--t);border-bottom:1px solid var(--border)}
+.prow:last-child{border-bottom:none}
+.prow:hover{background:var(--bg3);padding-right:1.9rem}
+.pr-nm{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--ink);margin-bottom:.32rem;display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.pr-em{font-size:1.2rem}
+.pr-best-tag{background:var(--gold);color:var(--g900);padding:.1rem .38rem;border-radius:5px;font-size:.58rem;font-weight:800;text-transform:uppercase}
+.pr-tags{display:flex;flex-wrap:wrap;gap:.27rem;margin-bottom:.3rem}
+.ptag{background:var(--g100);color:var(--g800);padding:.13rem .45rem;border-radius:5px;font-size:.64rem;font-weight:500}
+[data-theme="dark"] .ptag{background:rgba(82,183,136,.14);color:var(--g300)}
+.pr-desc{font-size:.76rem;color:var(--ink3);font-weight:300}
+.pr-r{text-align:left;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.pr-price{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--g700);white-space:nowrap}
+.pr-orig{font-size:.7rem;color:var(--ink4);text-decoration:line-through}
+.pr-btn{display:flex;align-items:center;gap:.28rem;background:var(--g800);color:#fff;padding:.3rem .7rem;border-radius:20px;font-size:.68rem;font-weight:700;transition:all var(--t);white-space:nowrap}
+.prow:hover .pr-btn{background:var(--g600)}
+
+/* ════════ ELEVATE CARDS ════════ */
+.el-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:1.2rem}
+.ec{background:#0a1610;border:1px solid rgba(255,255,255,.07);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .3s var(--ease);display:flex;flex-direction:column}
+[data-theme="light"] .ec{background:#0E1C12}
+.ec:hover{border-color:var(--gold);transform:translateY(-6px);box-shadow:0 28px 70px rgba(0,0,0,.5)}
+.ec-top{padding:1.8rem 1.6rem 1.4rem;background:linear-gradient(135deg,rgba(27,67,50,.9),rgba(0,0,0,.3));display:flex;justify-content:space-between;align-items:flex-start}
+.ec-em{font-size:3.8rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));transition:transform .3s}
+.ec:hover .ec-em{transform:scale(1.1) rotate(-5deg)}
+.ec-price-blk{}
+.ec-price{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--gold2)}
+.ec-orig{font-size:.68rem;color:rgba(255,255,255,.3);text-decoration:line-through;font-weight:300}
+.ec-save{font-size:.65rem;background:rgba(192,57,43,.8);color:#fff;padding:.12rem .4rem;border-radius:8px;font-weight:700;display:inline-block;margin-top:.2rem}
+.ec-body{padding:1.3rem 1.6rem;flex:1}
+.ec-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.22rem}
+.ec-sub{font-size:.68rem;font-weight:300;color:rgba(255,255,255,.38);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.85rem}
+.ec-macros{display:flex;flex-wrap:wrap;gap:.32rem;margin-bottom:.85rem}
+.ec-mac{background:rgba(200,150,62,.12);border:1px solid rgba(200,150,62,.2);color:var(--gold3);padding:.17rem .52rem;border-radius:7px;font-size:.69rem;font-weight:500}
+.ec-uses{display:flex;flex-direction:column;gap:.32rem}
+.ec-use{font-size:.79rem;color:rgba(255,255,255,.58);font-weight:300;display:flex;align-items:flex-start;gap:.4rem;line-height:1.4}
+.ec-use::before{content:'→';color:var(--gold2);flex-shrink:0}
+.ec-cta{margin:1.2rem 1.6rem 1.6rem;width:calc(100% - 3.2rem);display:flex;align-items:center;justify-content:center;gap:.45rem;padding:.85rem;background:var(--gold);color:var(--g900);border-radius:var(--r-sm);font-weight:700;font-size:.87rem;transition:all var(--t);cursor:pointer}
+.ec-cta:hover{background:var(--gold2)}
+
+/* ════════ TIPS ════════ */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:1.2rem}
+.tip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:all var(--t)}
+.tip-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px var(--sh)}
+.tip-top{padding:1.7rem 1.5rem 1.3rem;display:flex;align-items:center;gap:.85rem;border-bottom:1px solid var(--border)}
+.tip-ico{font-size:2.2rem;flex-shrink:0}
+.tip-h{font-family:'Cormorant Garamond',serif;font-size:1.38rem;font-weight:700;color:var(--g700)}
+.tip-rows{padding:1.1rem 1.5rem;display:flex;flex-direction:column;gap:.48rem}
+.tip-row{display:flex;align-items:flex-start;gap:.6rem;font-size:.83rem;color:var(--ink2);font-weight:300;padding:.48rem .72rem;background:var(--bg3);border-radius:var(--r-sm);line-height:1.5}
+.chip{background:var(--g800);color:#fff;padding:.1rem .42rem;border-radius:5px;font-size:.64rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* ════════ CONTACT ════════ */
+.contact-wrap{min-height:calc(100dvh - 62px);margin-top:62px;display:flex;align-items:center;justify-content:center;padding:clamp(2rem,5vw,4rem) clamp(1rem,5%,5%);background:var(--bg)}
+.cc{max-width:460px;width:100%;text-align:center}
+.cc-logo{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;letter-spacing:6px;color:var(--g700);margin-bottom:.15rem}
+.cc-by{font-size:.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);font-weight:300;margin-bottom:1.8rem}
+.cc-txt{font-size:.89rem;font-weight:300;color:var(--ink3);line-height:1.75;margin-bottom:1.8rem}
+.wa-main{display:flex;align-items:center;justify-content:center;gap:.7rem;background:#25D366;color:#fff;text-decoration:none;padding:1.2rem 2rem;border-radius:var(--r-lg);font-size:1.05rem;font-weight:700;box-shadow:0 12px 32px rgba(37,211,102,.28);transition:all var(--t);margin-bottom:1.5rem}
+.wa-main:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(37,211,102,.38)}
+.wa-main i{font-size:1.7rem}
+.cc-meta{display:flex;flex-direction:column;gap:.55rem;margin-bottom:2.2rem}
+.cc-mr{display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:.82rem;color:var(--ink3);font-weight:300}
+.cc-mr i{color:var(--g500)}
+.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.c-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem .9rem;text-align:center;cursor:pointer;transition:all var(--t);display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.c-tile:hover{border-color:var(--g500);background:var(--g50)}
+[data-theme="dark"] .c-tile:hover{background:var(--bg4)}
+.c-tile i{font-size:1.3rem;color:var(--g500)}
+.c-tile strong{font-size:.83rem;font-weight:700;color:var(--ink)}
+.c-tile span{font-size:.7rem;color:var(--ink4);font-weight:300}
+
+/* ════════ PRODUCT DETAIL ════════ */
+.dw{margin-top:62px;padding:clamp(1.5rem,4vw,2.5rem) clamp(1rem,5%,5%) clamp(4rem,8vw,6rem);background:var(--bg);min-height:100dvh}
+.d-back{display:inline-flex;align-items:center;gap:.4rem;color:var(--ink3);font-size:.82rem;cursor:pointer;transition:color var(--t);margin-bottom:1.8rem}
+.d-back:hover{color:var(--g600)}
+.dgrid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(1.5rem,4vw,2.5rem);max-width:960px;align-items:start}
+@media(max-width:700px){.dgrid{grid-template-columns:1fr}}
+.d-imgs{position:relative}
+.d-main{border-radius:var(--r-lg);aspect-ratio:1;overflow:hidden;background:linear-gradient(135deg,var(--g800),var(--g900));display:flex;align-items:center;justify-content:center;font-size:clamp(4rem,12vw,6rem);margin-bottom:.7rem;box-shadow:0 16px 48px var(--sh2);position:relative}
+@media(max-width:700px){.d-main{aspect-ratio:16/10;font-size:clamp(3.5rem,15vw,6rem)}}
+.d-thumbs{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:2px}
+.d-thumb{width:58px;height:58px;border-radius:var(--r-sm);overflow:hidden;border:2px solid var(--border);cursor:pointer;background:linear-gradient(135deg,var(--g700),var(--g800));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;transition:border-color var(--t)}
+.d-thumb.on{border-color:var(--g600)}
+.d-kit{font-size:.63rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:.4rem}
+.d-name{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,4vw,2.1rem);font-weight:700;color:var(--ink);line-height:1.1;margin-bottom:.5rem}
+.d-prow{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;margin-bottom:1.3rem;padding-bottom:1.3rem;border-bottom:1px solid var(--border)}
+.d-price{font-family:'Cormorant Garamond',serif;font-size:2.3rem;font-weight:700;color:var(--g700)}
+.d-orig{font-size:1rem;color:var(--ink4);text-decoration:line-through;font-weight:300}
+.d-save{background:var(--red);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.68rem;font-weight:700}
+.d-scar{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem}
+.d-scar span{display:inline-flex;align-items:center;gap:.3rem;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.25);border-radius:20px;padding:.25rem .7rem;font-size:.71rem;font-weight:600;color:var(--gold);white-space:nowrap}
+.d-scar span i{font-size:.65rem}
+.d-sch{font-size:.67rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;gap:.4rem;margin-bottom:.55rem}
+.d-sch i{color:var(--g500)}
+.d-sec{margin-bottom:1.3rem}
+.d-tags{display:flex;flex-wrap:wrap;gap:.33rem}
+.dtag{background:var(--g100);color:var(--g800);border:1px solid rgba(82,183,136,.2);padding:.2rem .58rem;border-radius:8px;font-size:.73rem;font-weight:500}
+[data-theme="dark"] .dtag{background:rgba(82,183,136,.12);color:var(--g300)}
+.d-uses{display:flex;flex-direction:column;gap:.32rem}
+.d-use{display:flex;align-items:flex-start;gap:.42rem;font-size:.83rem;color:var(--ink2);font-weight:300;padding:.4rem .7rem;background:var(--bg3);border-radius:8px;line-height:1.5}
+.d-use::before{content:'✓';color:var(--g500);font-weight:700;flex-shrink:0}
+
+/* Reviews */
+.revs-top{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.3rem;padding:1.2rem;background:var(--bg3);border-radius:var(--r)}
+.rev-big-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:700;color:var(--g700);line-height:1}
+.rev-right{}
+.rev-stars-big{color:var(--gold);font-size:1.1rem;letter-spacing:2px;margin-bottom:.25rem}
+.rev-count{font-size:.8rem;color:var(--ink3);font-weight:300}
+.revs-list{display:flex;flex-direction:column;gap:.75rem}
+.rev{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.15rem;transition:all var(--t)}
+.rev:hover{box-shadow:0 4px 16px var(--sh)}
+.rev-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;gap:.5rem;flex-wrap:wrap}
+.rev-name{font-weight:700;font-size:.86rem;color:var(--ink)}
+.rev-stars{color:var(--gold);font-size:.7rem;letter-spacing:1px}
+.rev-txt{font-size:.82rem;color:var(--ink2);font-weight:300;line-height:1.55}
+.rev-date{font-size:.68rem;color:var(--ink4);font-weight:300;margin-top:.3rem}
+.rev-verified{font-size:.65rem;color:var(--g500);font-weight:500;display:flex;align-items:center;gap:.2rem}
+
+/* Delivery box */
+.dlv{background:var(--g800);border-radius:var(--r-lg);padding:1.7rem 1.9rem;margin:2.2rem 0}
+.dlv h5{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--gold3);display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem}
+.dlv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.55rem}
+.dlv-it{display:flex;align-items:center;gap:.42rem;font-size:.79rem;color:var(--g300);font-weight:300}
+.dlv-it::before{content:'✓';color:var(--gold2);font-weight:700;flex-shrink:0}
+
+/* ════════ FOOTER ════════ */
+footer{background:var(--nav);padding:clamp(2.5rem,5vw,3.5rem) clamp(1rem,5%,5%) clamp(1.5rem,3vw,2rem)}
+.ft{max-width:1180px;margin-inline:auto;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;margin-bottom:1.8rem}
+@media(max-width:540px){.ft{grid-template-columns:1fr}}
+.ft-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;letter-spacing:4px;color:#fff}
+.ft-by{font-size:.61rem;letter-spacing:4px;color:var(--gold2);text-transform:uppercase;font-weight:300;margin-bottom:.8rem}
+.ft-links{display:flex;flex-wrap:wrap;gap:.8rem}
+.ft-links a{font-size:.76rem;color:rgba(255,255,255,.38);transition:color var(--t);cursor:pointer}
+.ft-links a:hover{color:#fff}
+.ft-copy{text-align:center;font-size:.68rem;color:rgba(255,255,255,.22);border-top:1px solid rgba(255,255,255,.06);padding-top:1.4rem;max-width:1180px;margin-inline:auto}
+
+/* ════════ TIKTOK NAV ICON ════════ */
+.n-tt{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-size:.88rem;display:flex;align-items:center;justify-content:center;transition:all var(--t);cursor:pointer;flex-shrink:0;text-decoration:none}
+.n-tt:hover{background:rgba(0,0,0,.8);border-color:#69C9D0;color:#69C9D0;box-shadow:0 0 14px rgba(105,201,208,.3);transform:scale(1.05)}
+
+/* ════════ PRODUCT IMAGE SYSTEM ════════ */
+
+.pc-top{
+  position:relative;
+  height:260px;
+  overflow:hidden;
+}
+
+.pc-prod-img{
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  position:absolute;
+  inset:0;
+  z-index:1;
+}
+
+.d-prod-img{
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  position:absolute;
+  inset:0;
+}
+
+.pc-em{
+  position:relative;
+  z-index:2;
+}
+/* ════════ BETTER SECTION ICONS ════════ */
+.sc-i-wrap{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;font-size:1.3rem;color:var(--gold2)}
+.trust-strip .tc i{font-size:1.4rem;color:var(--gold2);width:44px;height:44px;background:rgba(255,255,255,.06);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:.4rem}
+
+/* ════════ IMPROVED PROW with image ════════ */
+.prow{display:grid;grid-template-columns:60px 1fr auto;gap:.9rem;align-items:center;background:var(--surface);padding:1.1rem 1.2rem;cursor:pointer;transition:all var(--t);border-bottom:1px solid var(--border)}
+.prow:last-child{border-bottom:none}
+.prow:hover{background:var(--bg3)}
+.prow-thumb{width:60px;height:60px;border-radius:var(--r-sm);overflow:hidden;background:linear-gradient(135deg,var(--g800),var(--g900));display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0;border:1px solid var(--border)}
+.prow-thumb img{width:100%;height:100%;object-fit:fill}
+
+/* ════════ FOOTER SOCIAL ════════ */
+.ft-socials{display:flex;align-items:center;gap:.6rem;margin-top:.8rem}
+.ft-soc{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all var(--t);text-decoration:none}
+.ft-soc:hover{color:#fff;border-color:rgba(255,255,255,.4);transform:translateY(-2px)}
+.ft-soc.tt:hover{color:#69C9D0;border-color:#69C9D0;box-shadow:0 4px 14px rgba(105,201,208,.25)}
+.ft-soc.wa:hover{color:#25D366;border-color:#25D366;box-shadow:0 4px 14px rgba(37,211,102,.2)}
+
+/* ════════ MOBILE WA FAB ════════ */
+#wa-fab{position:fixed;bottom:1.4rem;left:1.4rem;z-index:400;background:#25D366;color:#fff;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 6px 20px rgba(37,211,102,.4);transition:all var(--t);text-decoration:none}
+#wa-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 32px rgba(37,211,102,.5)}
+@media(min-width:560px){#wa-fab{width:auto;border-radius:50px;padding:.68rem 1.2rem;font-size:.82rem;gap:.4rem}
+#wa-fab::after{content:'اطلب الآن';font-family:'Tajawal',sans-serif;font-weight:700}}
+
+/* ════════ RESPONSIVE ════════ */
+@media(max-width:768px){
+  .n-links,.n-wa{display:none}
+  .ham{display:flex}
+  .pgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  .pgrid{grid-template-columns:1fr}
+  .el-grid{grid-template-columns:1fr}
+  .tips-grid{grid-template-columns:1fr}
+  .c3{grid-template-columns:1fr 1fr}
+  .ship-grid{grid-template-columns:1fr 1fr}
+  .prow{grid-template-columns:52px 1fr auto;gap:.6rem;padding:.9rem 1rem}
+  .prow-thumb{width:52px;height:52px}
+  .pr-nm{font-size:.95rem}
+  .revs-top{flex-direction:column;text-align:center}
+}
+@media(max-width:380px){
+  .pgrid{grid-template-columns:1fr}
+  .ship-grid{grid-template-columns:1fr}
+  .c3{grid-template-columns:1fr 1fr}
+  .hero-h1{letter-spacing:3px}
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══ POPUP ══ -->
+<div id="popup">
+  <div class="pw">
+    <div class="pw-top">
+      <span class="pw-leaf1">🌿</span>
+      <div class="pw-logo">PUREFORM</div>
+      <div class="pw-by">by risen live · natural power</div>
+      <span class="pw-leaf2">🌿</span>
+    </div>
+    <div class="pw-body">
+      <div class="sdots">
+        <div class="sdot on" id="dot0"></div>
+        <div class="sdot" id="dot1"></div>
+        <div class="sdot" id="dot2"></div>
+        <div class="sdot" id="dot3"></div>
+        <div class="sdot" id="dot4"></div>
+      </div>
+
+      <!-- S0: Name -->
+      <div class="step on" id="s0">
+        <div class="step-h">أهلاً! ما اسمك الأول؟ 👋<small>عشان نتعرف عليك ونخصص تجربتك</small></div>
+        <input class="p-in" id="p-name" placeholder="اكتب اسمك هنا…" maxlength="30" autocomplete="off">
+        <button class="pcta" id="s0-btn">التالي <i class="fas fa-arrow-left" style="font-size:.75rem"></i></button>
+      </div>
+
+      <!-- S1: Gender -->
+      <div class="step" id="s1">
+        <div class="step-h">إيه نوعك؟<small>هنقدر نقترح المنتجات الأنسب ليك</small></div>
+        <div class="c2">
+          <button class="cbtn" data-g="female"><span class="em">👩</span>بنت</button>
+          <button class="cbtn" data-g="male"><span class="em">👨</span>راجل</button>
+        </div>
+        <button class="pcta" id="s1-btn">التالي <i class="fas fa-arrow-left" style="font-size:.75rem"></i></button>
+      </div>
+
+      <!-- S2: Body -->
+      <div class="step" id="s2">
+        <div class="step-h">إيه وصف جسمك؟<small>دي معلومة مهمة عشان نقترح الصح</small></div>
+        <div class="c3">
+          <button class="cbtn" data-b="thin"><span class="em">🧍</span>نحيف/ة</button>
+          <button class="cbtn" data-b="normal"><span class="em">✅</span>طبيعي</button>
+          <button class="cbtn" data-b="over"><span class="em">⚖️</span>زيادة وزن</button>
+        </div>
+        <button class="pcta" id="s2-btn">التالي <i class="fas fa-arrow-left" style="font-size:.75rem"></i></button>
+      </div>
+
+      <!-- S3: Problem -->
+      <div class="step" id="s3">
+        <div class="step-h">إيه مشكلتك الأساسية؟<small>اختار اللي بيأثر عليك أكتر</small></div>
+        <div class="cf">
+          <button class="crow" data-p="thinness">
+            <span class="em">🏗️</span>
+            <div class="crow-txt">نحافة وصعوبة زيادة الوزن<div class="crow-sub">عايز تزيد وزنك وتبني عضلة</div></div>
+          </button>
+          <button class="crow" data-p="fat">
+            <span class="em">🔥</span>
+            <div class="crow-txt">دهون وزيادة وزن<div class="crow-sub">عايز تنزل وزنك وتحرق الدهون</div></div>
+          </button>
+          <button class="crow" data-p="hair">
+            <span class="em">💆</span>
+            <div class="crow-txt">تساقط شعر وجفاف<div class="crow-sub">شعرك بيتكسر وبيتساقط</div></div>
+          </button>
+          <button class="crow" data-p="skin">
+            <span class="em">✨</span>
+            <div class="crow-txt">جفاف وتغيير لون البشرة<div class="crow-sub">بشرتك جافة أو محتاج ترطيب</div></div>
+          </button>
+          <button class="crow" data-p="acne">
+            <span class="em">🌿</span>
+            <div class="crow-txt">حب الشباب والبثور<div class="crow-sub">وجهك أو جسمك فيه حب شباب</div></div>
+          </button>
+          <button class="crow" data-p="energy">
+            <span class="em">⚡</span>
+            <div class="crow-txt">ضعف طاقة وتركيز<div class="crow-sub">بتحس بتعب وإرهاق مستمر</div></div>
+          </button>
+          <button class="crow" data-p="other">
+            <span class="em">🎯</span>
+            <div class="crow-txt">أخرى / أريد كل شيء<div class="crow-sub">محتاج رأيك في كل المنتجات</div></div>
+          </button>
+        </div>
+        <button class="pcta" id="s3-btn">شوف توصياتك 🚀</button>
+      </div>
+
+      <!-- S4: Welcome -->
+      <div class="step" id="s4">
+        <div class="w-box">
+          <span class="w-em" id="w-em">🌿</span>
+          <div class="w-name" id="w-name"></div>
+          <div class="w-sub" id="w-sub"></div>
+          <div class="w-card">
+            <div class="w-card-lbl">توصياتك المخصصة ليك</div>
+            <div class="w-card-txt" id="w-rec"></div>
+          </div>
+          <button class="pcta" id="s4-btn">اكتشف المنتجات 🌿</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <div class="n-brand" onclick="go('home')">PUREFORM<small>by risen live</small></div>
+  <div class="n-links">
+    <span class="n-lnk" onclick="go('home')">الرئيسية</span>
+    <span class="n-lnk" onclick="go('beauty')">RZN Beauty</span>
+    <span class="n-lnk" onclick="go('elevate')">Elevate</span>
+    <span class="n-lnk" onclick="go('tips')">Tips & Goals</span>
+    <span class="n-lnk" onclick="go('contact')">تواصل معنا</span>
+  </div>
+  <div class="n-right">
+    <a class="n-tt" href="https://www.tiktok.com/@pureform77" target="_blank" title="TikTok @pureform77"><i class="fab fa-tiktok"></i></a>
+    <button id="theme-btn"><i class="fas fa-sun ico-sun"></i><i class="fas fa-moon ico-moon"></i></button>
+    <span class="n-wa" onclick="go('contact')"><i class="fab fa-whatsapp"></i> اطلب الآن</span>
+    <button class="ham" id="ham" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div id="drawer">
+  <span class="n-lnk" onclick="go('home');toggleDrawer()">الرئيسية</span>
+  <span class="n-lnk" onclick="go('beauty');toggleDrawer()">RZN Beauty</span>
+  <span class="n-lnk" onclick="go('elevate');toggleDrawer()">Elevate</span>
+  <span class="n-lnk" onclick="go('tips');toggleDrawer()">Tips & Goals</span>
+  <span class="n-lnk" onclick="go('contact');toggleDrawer()">تواصل معنا</span>
+  <a class="btn btn-wa" href="https://wa.me/201286332777" target="_blank" style="margin-top:.5rem"><i class="fab fa-whatsapp"></i> اطلب الآن</a>
+</div>
+<div id="bar"></div>
+
+<!-- WA Fab -->
+<a id="wa-fab" href="https://wa.me/201286332777" target="_blank">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<div id="app"></div>
+
+<footer>
+  <div class="ft">
+    <div>
+      <div class="ft-logo">PUREFORM</div>
+      <div class="ft-by">by risen live</div>
+      <div class="ft-socials">
+        <a class="ft-soc wa" href="https://wa.me/201286332777" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+        <a class="ft-soc tt" href="https://www.tiktok.com/@pureform77" target="_blank" title="TikTok @pureform77"><i class="fab fa-tiktok"></i></a>
+      </div>
+      <div class="ft-links" style="margin-top:.8rem">
+        <a onclick="go('home')">الرئيسية</a>
+        <a onclick="go('beauty')">RZN Beauty</a>
+        <a onclick="go('elevate')">Elevate</a>
+        <a onclick="go('tips')">Tips & Goals</a>
+        <a onclick="go('contact')">تواصل معنا</a>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;align-items:flex-start">
+      <a class="btn btn-wa" href="https://wa.me/201286332777" target="_blank" style="padding:.7rem 1.3rem;font-size:.8rem;border-radius:var(--r-sm)">
+        <i class="fab fa-whatsapp"></i> 01286332777
+      </a>
+      <a href="https://www.tiktok.com/@pureform77" target="_blank" style="display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:rgba(255,255,255,.45);transition:color var(--t)" onmouseover="this.style.color='#69C9D0'" onmouseout="this.style.color='rgba(255,255,255,.45)'">
+        <i class="fab fa-tiktok"></i> @pureform77
+      </a>
+    </div>
+  </div>
+  <div class="ft-copy">© 2024 PUREFORM · Risen Live · Natural Power. Real Results. جميع الحقوق محفوظة</div>
+</footer>
+
+<script>
+/* ══════════ DATA ══════════ */
+/* ━━━ لإضافة صورة لأي منتج: ابحث عن img:'' الخاصة بالمنتج وضع رابط الصورة بداخلها
+   مثال: img:'https://yoursite.com/images/product1.jpg'
+   يمكن استخدام روابط من أي موقع استضافة صور مثل Google Drive, Dropbox, Cloudinary ━━━ */
+const KITS=[
+ {key:'strong',label:'Be Strong',icon:'💪',tag:'عناية الشعر',color:'#1B4332',
+  items:[
+   {id:'b1',em:'',nm:'Be Strong Shampoo',pr:550,orig:619,best:false,badge:'',
+    tags:['جوز الهند','الريحان','الشيكاكاي','جنزبيل هندي','فيتامين هـ'],
+    benefits:['يقلل التساقط بشكل ملحوظ','لمعان طبيعي وصحي','يرطب فروة الرأس'],
+    uses:['تغذية كاملة للشعر من الجذور للأطراف','يمنح لمعان طبيعي وصحي','يوفر ترطيب عميق لفروة الرأس','يقلل فقدان البروتين الطبيعي للشعر','يعزز قوة الشعر ويقلل التساقط','مناسب لكل أنواع الشعر'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.14.09 AM (2).jpeg',
+    problems:['hair']},
+   {id:'b2',em:'',nm:'Be Strong Conditioner',pr:550,orig:619,best:true,badge:'الأكثر طلباً',
+    tags:['الصبار','زيت الأرجان','زبدة الشيا','الكرياتين','جوز الهند'],
+    benefits:['يصلح التلف ويقوي الشعر','حماية من أشعة الشمس','يقلل التقصف ٩٠٪'],
+    uses:['إصلاح التلف','تقوية الشعر','حماية من الشمس','تقليل التقصف والتكسر','تجديد فروة الرأس','علاج الشعر الجاف'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.13.55 AM.jpeg',
+    problems:['hair']},
+   {id:'b3',em:'',nm:'Be Strong Hair Mist',pr:499,orig:568,best:true,badge:'مميز',
+    tags:['الصبار','الأرجان','جوز الهند','الكرياتين','زيت اللوز'],
+    benefits:['ترطيب طوال اليوم','يمنع الجفاف والتكسر','يعزز اللمعان الطبيعي'],
+    uses:['ترطيب طوال اليوم','حماية من التلف','الحفاظ على البروتين الطبيعي','منع الجفاف','تعزيز اللمعان','تقليل التكسر'],
+    img:'New folder/WhatsApp Image 2026-03-02 at 3.05.24 PM.jpeg',
+    problems:['hair']},
+  ]},
+ {key:'enzyme',label:'Enzyme Kit',icon:'🌸',tag:'عناية البشرة',color:'#4a1942',
+  items:[
+   {id:'e1',em:'',nm:'Bloushing Blossom Body Wash',pr:399,orig:468,best:false,badge:'',
+    tags:['بابايا','أناناس','زبدة الشيا','عشب الليمون'],
+    benefits:['يرطب ويجدد خلايا البشرة','يزيل الجلد الميت بلطف','يفتح آثار الشمس'],
+    uses:['مكافحة الجفاف','ترطيب عميق','تجديد خلايا البشرة','إزالة الجلد الميت','تفتيح آثار الشمس','تنظيف لطيف دون تجفيف'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.14.09 AM (1).jpeg',
+    problems:['skin']},
+   {id:'e2',em:'',nm:'Splash Face Scrub',pr:499,orig:568,best:false,badge:'',
+    tags:['بابايا','أناناس','قرفة','بندق','فيتامين هـ'],
+    benefits:['تقشير لطيف وآمن','يزيل الرؤوس السوداء','يعزز إنتاج الكولاجين'],
+    uses:['تقشير لطيف وآمن','تنظيف عميق للمسام','إزالة الرؤوس السوداء','علاج آثار حب الشباب','تعزيز إنتاج الكولاجين','تحسين ملمس البشرة'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.14.10 AM.jpeg',
+    problems:['acne','skin']},
+   {id:'e3',em:'',nm:'Splash Face Wash',pr:499,orig:568,best:false,badge:'',
+    tags:['بابايا','زيت شجرة الشاي','الخوخ الهندي','فيتامين هـ'],
+    benefits:['تنظيف عميق مضاد للبكتيريا','يوحد لون البشرة','نضارة فورية بعد الغسيل'],
+    uses:['تنظيف عميق للبشرة','مضاد للبكتيريا','توحيد لون البشرة','تقليل الزيوت الضارة','معالجة أضرار الأشعة فوق البنفسجية','منح نضارة فورية'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.12.08 AM.jpeg',
+    problems:['acne','skin']},
+  ]},
+ {key:'berries',label:'Berries Kit',icon:'🍓',tag:'توت وفراولة',color:'#7B1D45',
+  items:[
+   {id:'be1',em:'',nm:'Berry Go Round Body Wash',pr:399,orig:468,best:false,badge:'',
+    tags:['توت بري','فراولة','جنزبيل','زبدة الشيا'],
+    benefits:['ترطيب عميق وإشراقة','تفتيح طبيعي','يجدد الخلايا ويحسن اللون'],
+    uses:['ترطيب عميق','تحسين مظهر الخطوط','تفتيح طبيعي','تجديد خلايا البشرة','تصحيح لون البشرة','منح إشراقة صحية'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.12.50 AM.jpeg',
+    problems:['skin']},
+  ]},
+ {key:'splash',label:'Body Splashes',icon:'✨',tag:'بخاخات الجسم',color:'#3D2C1E',
+  items:[
+   {id:'s1',em:'',nm:'Wiseman Body Splash',pr:659,orig:728,best:true,badge:'الأقوى مبيعاً',
+    tags:['خشب الصندل الهندي','بانثينول','فيتامين هـ'],
+    benefits:['ترطيب عميق طويل الأمد','يعالج حب الشباب والحكة','يساعد في التئام الجروح'],
+    uses:['ترطيب عميق','الوقاية من علامات الشيخوخة','علاج حب الشباب','علاج الحكة','علاج حروق الشمس','المساعدة في التئام الجروح','المساعدة في حالات الأكزيما','رائحة ثابتة ومنعشة'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.14.02 AM.jpeg',
+    problems:['skin','acne']},
+   {id:'s2',em:'',nm:'Blind Date Body Splash',pr:659,orig:728,best:false,badge:'',
+    tags:['خشب الصندل الهندي','بانثينول','فيتامين هـ'],
+    benefits:['انتعاش ورائحة تدوم ساعات','يرطب ويعالج التهيج','يقلل الجفاف'],
+    uses:['ترطيب الجسم','إحساس انتعاش طويل','علاج التهيج','تقليل الجفاف','المساعدة في شفاء البشرة','رائحة جذابة تدوم طويلًا'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.14.10 AM (1).jpeg',
+    problems:['skin']},
+  ]},
+ {key:'lotion',label:'Lotion & Gift',icon:'🎁',tag:'لوشن وهدايا',color:'#1B3A4B',
+  items:[
+   {id:'l1',em:'',nm:'Your Love Body Lotion',pr:599,orig:668,best:true,badge:'الأعلى تقييماً',
+    tags:['اللافندر','جوز الهند','الزيتون','زبدة الشيا','فيتامين هـ'],
+    benefits:['ترطيب يدوم 12+ ساعة','يقلل الترهلات والخطوط','حماية كاملة من UV'],
+    uses:['ترطيب عميق','تقليل الترهلات','مضاد للفطريات والبكتيريا','حماية من الأشعة فوق البنفسجية','منح ملمس ناعم حريري','تحسين مرونة الجلد'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.13.37 AM.jpeg',
+    problems:['skin']},
+   {id:'pk1',em:'',nm:'Package Kit الكاملة',pr:1250,orig:1319,best:false,badge:'هدية مثالية',
+    tags:['عينات جميع المنتجات','شنطة أنيقة'],
+    benefits:['تجربة كاملة لجميع المنتجات','هدية مميزة ومفيدة','توفير أكبر في الأسعار'],
+    uses:['مثالي للتجربة الكاملة','مناسب كهدية فاخرة','طريقة رائعة لاكتشاف جميع المنتجات'],
+    img:'New folder/WhatsApp Image 2026-02-25 at 10.13.29 AM.jpeg',
+    problems:['other','skin','hair','acne']},
+  ]},
+];
+
+const ELEVATE=[
+ {id:'el1',em:'',nm:'Burnmode Tablets',pr:1500,orig:1569,best:true,badge:'الأكثر مبيعاً',sub:'Fat Burner',color:'#7B1D1D',
+  macros:[],tags:['تركيبة حرق متطورة'],
+  benefits:['حرق الدهون العنيدة','يرفع الطاقة والتركيز','يحسن التمثيل الغذائي'],
+  uses:['حرق الدهون','التحكم في الوزن','رفع مستوى الطاقة','تحسين الهضم','تسريع التمثيل الغذائي','مناسب للدهون العنيدة','دعم عملية التخسيس'],
+  img:'New folder/WhatsApp Image 2026-02-25 at 10.13.32 AM.jpeg',
+  problems:['fat']},
+ {id:'el2',em:'',nm:'Corepulse Creatine',pr:1351,orig:1420,best:false,badge:'',sub:'Performance Booster',color:'#1a2d6e',
+  macros:[],tags:['كرياتين نقي','امتصاص سريع'],
+  benefits:['يزيد القوة والأداء','يسرّع التعافي','مثالي للنحيفين'],
+  uses:['زيادة القوة العضلية','تحسين الأداء في التمرين','تسريع التعافي','دعم نمو العضلات','زيادة القدرة على التحمل','مثالي للنحيفين'],
+  img:'New folder/WhatsApp Image 2026-02-25 at 10.14.08 AM.jpeg',
+  problems:['thinness','energy']},
+ {id:'el3',em:'',nm:'MaxBulk Gainer',pr:2470,orig:2539,best:false,badge:'للنحيفين',sub:'Mass Gainer',color:'#3D2A1A',
+  macros:['77g بروتين','125g كارب','935 كالوري','52 سكوب'],
+  tags:['نكهتين متاحتين','عالي السعرات'],
+  benefits:['زيادة وزن فعالة وسريعة','يبني كتلة عضلية حقيقية','مثالي للنحيفين جداً'],
+  uses:['زيادة الوزن','بناء كتلة عضلية','دعم النحيفين','رفع السعرات اليومية بسهولة','تحسين شكل الجسم العام'],
+  img:'New folder/WhatsApp Image 2026-02-25 at 10.13.53 AM.jpeg',
+  problems:['thinness']},
+ {id:'el4',em:'',nm:'ISO Pro Protein',pr:1760,orig:1829,best:false,badge:'',sub:'Whey Isolate',color:'#1B3A4B',
+  macros:['بروتين نقي','بدون دهون','2 نكهة'],
+  tags:['نكهتين','امتصاص فائق السرعة','صفر دهون'],
+  benefits:['أنقى بروتين في السوق','يحفظ العضلة أثناء التخسيس','تعافي أسرع بعد التمرين'],
+  uses:['تناول بعد التمرين','الحفاظ على العضلات أثناء التخسيس','تسريع التعافي','تقليل فقدان الكتلة العضلية','دعم نظام غذائي صحي'],
+  img:'New folder/WhatsApp Image 2026-02-25 at 10.14.09 AM.jpeg',
+  problems:['fat','thinness','energy']},
+];
+
+/* ═══ REVIEWS (15+ each) ═══ */
+const REVIEWS={
+ b1:[
+  {n:'سارة محمد',s:5,t:'من أحسن شامبو جربته، شعري بقى أقوى وأكثر لمعاناً بعد أسبوعين بس!',d:'منذ أسبوع'},
+  {n:'منة الله عصام',s:5,t:'التساقط وقف تقريباً، حاسة بفرق كبير من أول استخدام.',d:'منذ أسبوعين'},
+  {n:'نورهان أحمد',s:5,t:'الريحة حلوة جداً والشعر بقى ناعم وصحي.',d:'منذ ٣ أسابيع'},
+  {n:'رنا إبراهيم',s:4,t:'منتج طبيعي ومكوناته واضحة، حاسة بفرق في القوة.',d:'منذ شهر'},
+  {n:'ياسمين علي',s:5,t:'أكثر شامبو استخدمته مرتين في الأسبوع وشعري صحح بالكامل.',d:'منذ شهر'},
+  {n:'دينا محمود',s:5,t:'اشتريته بناء على توصية صاحبتي وما خذلتنيش.',d:'منذ شهر'},
+  {n:'شروق أحمد',s:5,t:'البروتين الطبيعي اللي فيه حافظ على شعري من التلف.',d:'منذ شهرين'},
+  {n:'هدير سامي',s:4,t:'كنت بيتساقط شعري كتير وبعد استخدامه قل جداً.',d:'منذ شهرين'},
+  {n:'غادة يوسف',s:5,t:'شعري الجاف بقى حي ومبلل طول اليوم.',d:'منذ شهرين'},
+  {n:'إيمان طارق',s:5,t:'أنصح بيه لأي حد عنده مشكلة تساقط.',d:'منذ ٣ شهور'},
+  {n:'مها فريد',s:5,t:'حتى ريحته طبيعية ومش مصنعة.',d:'منذ ٣ شهور'},
+  {n:'نجوى سالم',s:4,t:'الاختلاف واضح في ملمس الشعر من أول شهر.',d:'منذ ٤ شهور'},
+  {n:'لمياء حسن',s:5,t:'الكيت كاملة مع المكيف تجربة استثنائية.',d:'منذ ٤ شهور'},
+  {n:'أسماء كريم',s:5,t:'بستخدمه لأكتر من ٤ شهور وما خذلنيش.',d:'منذ ٥ شهور'},
+  {n:'زينب محسن',s:5,t:'أحسن استثمار في الشعر عملته في حياتي.',d:'منذ ٥ شهور'},
+ ],
+ b2:[
+  {n:'نهال سامي',s:5,t:'مكيف رهيب، من بعده شعري بقى ناعم جداً وما فيش تقصف خالص.',d:'منذ أسبوع'},
+  {n:'مريم طارق',s:5,t:'الكرياتين فيه حاجة سحرية، الشعر بقى كثيف.',d:'منذ أسبوعين'},
+  {n:'ريهام أحمد',s:5,t:'أحسن مكيف جربته، ما بيثقلش الشعر وبيرطبه بشكل حقيقي.',d:'منذ ٣ أسابيع'},
+  {n:'ولاء محمد',s:4,t:'الزبدة الشيا والأرجان بيديوا ترطيب ممتاز.',d:'منذ شهر'},
+  {n:'سلمى خالد',s:5,t:'من بعد استخدامه شعري بقى يتمشط بسهولة.',d:'منذ شهر'},
+  {n:'أميرة سيد',s:5,t:'التقصف راح تماماً بعد أسبوعين.',d:'منذ شهر'},
+  {n:'هناء عمر',s:5,t:'أحسن مكيف في السوق بكل صراحة.',d:'منذ شهرين'},
+  {n:'نادية يوسف',s:5,t:'الشعر الجاف تعافى بشكل ملحوظ.',d:'منذ شهرين'},
+  {n:'إيناس محمود',s:4,t:'رائحته حلوة وبيدي شعر كالحرير.',d:'منذ شهرين'},
+  {n:'شيماء حسن',s:5,t:'بستخدمه مع الشامبو والنتيجة ممتازة جداً.',d:'منذ ٣ شهور'},
+  {n:'فريدة سالم',s:5,t:'حتى الشعر المحروق من الحرارة تحسن كتير.',d:'منذ ٣ شهور'},
+  {n:'نسرين فتحي',s:5,t:'من أفضل ما جربته للشعر المجعد.',d:'منذ ٤ شهور'},
+  {n:'إيمان عصام',s:5,t:'يستحق كل قرش، النتيجة تتكلم عن نفسها.',d:'منذ ٤ شهور'},
+  {n:'مهند علي',s:4,t:'جربته لزوجتي وانبسطت جداً.',d:'منذ ٥ شهور'},
+  {n:'وفاء إبراهيم',s:5,t:'الشعر بقى أجمل وأحسن بعد الاستخدام المستمر.',d:'منذ ٦ شهور'},
+ ],
+ b3:[
+  {n:'أميرة كريم',s:5,t:'أفضل مست للشعر، بطبقه على الشعر المبلول والنتيجة جنان.',d:'منذ أسبوع'},
+  {n:'لمياء حسن',s:5,t:'ترطيب طول اليوم بدون أي ثقل على الشعر.',d:'منذ أسبوعين'},
+  {n:'ريم سيد',s:5,t:'بقيت بستخدمه يومياً وشعري ما بيتكسرش خالص.',d:'منذ شهر'},
+  {n:'سمر نبيل',s:4,t:'الرائحة حلوة والحماية من الحرارة واضحة.',d:'منذ شهر'},
+  {n:'دعاء سمير',s:5,t:'أنقذ شعري من الجفاف الشديد.',d:'منذ شهرين'},
+  {n:'هبة محمد',s:5,t:'بستخدمه قبل الفرد وبيحمي شعري من الحرارة.',d:'منذ شهرين'},
+  {n:'رهف أحمد',s:5,t:'الكرياتين فيه بيقوي الشعر من الداخل.',d:'منذ ٣ شهور'},
+  {n:'سوسن علي',s:4,t:'سعر كويس جداً مقارنة بالنتيجة.',d:'منذ ٣ شهور'},
+  {n:'وسام طارق',s:5,t:'شعري المصبوغ بقى أحسن بكتير.',d:'منذ ٤ شهور'},
+  {n:'إيمان عمرو',s:5,t:'من أحسن منتجات العناية بالشعر.',d:'منذ ٤ شهور'},
+  {n:'فاطمة خليل',s:5,t:'بعد الاستحمام مباشرة بطبقه وشعري بيبقى ناعم جداً.',d:'منذ ٥ شهور'},
+  {n:'منال محمود',s:5,t:'الجفاف راح والشعر بقى يتنفس.',d:'منذ ٥ شهور'},
+  {n:'مرام حسن',s:4,t:'أنصح بيه كل بنت عندها مشكلة جفاف.',d:'منذ ٦ شهور'},
+  {n:'شرين فتحي',s:5,t:'بيعمل فرق ملحوظ من أول أسبوع.',d:'منذ ٦ شهور'},
+  {n:'نور الهدى',s:5,t:'منتج جبار بسعر معقول.',d:'منذ ٧ شهور'},
+ ],
+ e1:[
+  {n:'نجوى فاروق',s:5,t:'بشرتي بقت ناعمة ومضيئة من أول أسبوع، جنان.',d:'منذ أسبوع'},
+  {n:'شروق محمد',s:5,t:'رائحة البابايا رائعة والترطيب ممتاز وطويل الأمد.',d:'منذ أسبوعين'},
+  {n:'هبة عمر',s:5,t:'الجلد الميت راح تماماً وبشرتي بقت زي الحرير.',d:'منذ شهر'},
+  {n:'نادية أحمد',s:4,t:'ترطيب رائع ورائحة منعشة جداً.',d:'منذ شهر'},
+  {n:'سلوى إبراهيم',s:5,t:'بعد الاستحمام بيه بشرتي بتكون ناعمة وأبيض.',d:'منذ شهرين'},
+  {n:'إلهام سامي',s:5,t:'أحسن غسيل جسم جربته في حياتي.',d:'منذ شهرين'},
+  {n:'هند يوسف',s:5,t:'الأناناس والبابايا بيعملوا تقشير طبيعي خفيف.',d:'منذ ٣ شهور'},
+  {n:'نهى محمد',s:4,t:'آمن على البشرة الحساسة.',d:'منذ ٣ شهور'},
+  {n:'رانيا عصام',s:5,t:'بقى جزء أساسي في روتين حمامي.',d:'منذ ٤ شهور'},
+  {n:'سمية حسن',s:5,t:'آثار الشمس بدأت تخف بشكل ملحوظ.',d:'منذ ٤ شهور'},
+  {n:'مها سالم',s:5,t:'يستحق كل توصية، بشرتي تغيرت للأحسن.',d:'منذ ٥ شهور'},
+  {n:'شيرين علي',s:4,t:'النتيجة تتكلم عن نفسها.',d:'منذ ٥ شهور'},
+  {n:'أسمى فريد',s:5,t:'عبيه بيكمل تجربة الاستحمام بشكل رائع.',d:'منذ ٦ شهور'},
+  {n:'نيفين طارق',s:5,t:'أنصح كل بنت تجربه.',d:'منذ ٦ شهور'},
+  {n:'هاله محمود',s:5,t:'مكوناته طبيعية وآمنة وبتشتغل بشكل ممتاز.',d:'منذ ٧ شهور'},
+ ],
+ e2:[
+  {n:'ياسمين عبدالله',s:5,t:'الرؤوس السوداء اختفت بعد أسبوعين بس، صدمة إيجابية.',d:'منذ أسبوع'},
+  {n:'إيناس سمير',s:5,t:'تقشير خفيف ومريح ومش عنيف على البشرة.',d:'منذ أسبوعين'},
+  {n:'سلمى خالد',s:5,t:'بستخدمه مرتين في الأسبوع والفرق واضح جداً.',d:'منذ شهر'},
+  {n:'نهال إبراهيم',s:4,t:'رائحة البابايا والقرفة مع بعض حلوة جداً.',d:'منذ شهر'},
+  {n:'نورا محمد',s:5,t:'بشرتي بقت أنعم بكتير وأقل إرهاقاً.',d:'منذ شهرين'},
+  {n:'شهد أحمد',s:5,t:'بعد الاستخدام بيه وجهي بيكون مضيء.',d:'منذ شهرين'},
+  {n:'رنا علي',s:5,t:'حتى الكولاجين بدأ يزيد والبشرة بقت ممتلئة.',d:'منذ ٣ شهور'},
+  {n:'ليلى حسن',s:4,t:'آمن وفعّال ومنتج استثنائي بسعر ممتاز.',d:'منذ ٣ شهور'},
+  {n:'هناء سالم',s:5,t:'من أفضل مقشرات الوجه اللي جربتها.',d:'منذ ٤ شهور'},
+  {n:'نفيسة يوسف',s:5,t:'الحبوب والبقع بدأت تختفي من الأسبوع الأول.',d:'منذ ٤ شهور'},
+  {n:'وسام إسماعيل',s:5,t:'مناسب حتى للبشرة الحساسة.',d:'منذ ٥ شهور'},
+  {n:'سارة خليل',s:5,t:'أنصح بيه لكل بنت عندها مشكلة حب شباب.',d:'منذ ٥ شهور'},
+  {n:'إيمان عمر',s:4,t:'ممتاز ومكوناته طبيعية وآمنة.',d:'منذ ٦ شهور'},
+  {n:'منى فتحي',s:5,t:'فرق حقيقي في ملمس البشرة.',d:'منذ ٦ شهور'},
+  {n:'دعاء محمود',s:5,t:'بقى ثابت في روتيني الأسبوعي.',d:'منذ ٧ شهور'},
+ ],
+ e3:[
+  {n:'مها إبراهيم',s:5,t:'أحسن غسيل وجه جربته، بيعمل تنظيف عميق وبدون تجفيف.',d:'منذ أسبوع'},
+  {n:'دعاء أحمد',s:5,t:'حب الشباب قل بشكل ملحوظ من الأسبوع الثاني.',d:'منذ أسبوعين'},
+  {n:'ولاء عصام',s:5,t:'وجهي مشرق بعد الاستخدام مباشرة.',d:'منذ شهر'},
+  {n:'هدى محمد',s:4,t:'زيت شجرة الشاي بيعمل فرق في البثور.',d:'منذ شهر'},
+  {n:'سناء أحمد',s:5,t:'بيغسل الوجه بعمق من غير ما يجففه.',d:'منذ شهرين'},
+  {n:'نيرة حسن',s:5,t:'توحيد لون البشرة محسوس بعد شهر استخدام.',d:'منذ شهرين'},
+  {n:'مرفت سامي',s:5,t:'للبشرة الدهنية ده الأنسب بدون منازع.',d:'منذ ٣ شهور'},
+  {n:'وفاء خليل',s:4,t:'آمن ومناسب للاستخدام اليومي.',d:'منذ ٣ شهور'},
+  {n:'إيمان عادل',s:5,t:'الجلد بعده بيكون نضيف ومضيء.',d:'منذ ٤ شهور'},
+  {n:'نجلاء يوسف',s:5,t:'يستحق كل توصية، نتيجة رائعة.',d:'منذ ٤ شهور'},
+  {n:'رشا سيد',s:5,t:'غيرت شكل بشرتي للأحسن.',d:'منذ ٥ شهور'},
+  {n:'أسماء كريم',s:4,t:'رائحته منعشة ومريحة جداً.',d:'منذ ٥ شهور'},
+  {n:'مي فريد',s:5,t:'بقى جزء من روتين صباحي اليومي.',d:'منذ ٦ شهور'},
+  {n:'شيرين أحمد',s:5,t:'أقل منتج بنفس الجودة في السوق.',d:'منذ ٦ شهور'},
+  {n:'منار إبراهيم',s:5,t:'أنصح بيه لكل صاحبة معندهاش تجربة في العناية.',d:'منذ ٧ شهور'},
+ ],
+ be1:[
+  {n:'أسماء طارق',s:5,t:'رائحة الفراولة زكية جداً والترطيب ممتاز وطويل.',d:'منذ أسبوع'},
+  {n:'زينب علي',s:5,t:'بشرتي بقت أفتح وأكثر إشراقاً من بعد أسبوع.',d:'منذ أسبوعين'},
+  {n:'شيماء حسين',s:4,t:'منتج رائع وسعره كويس مقارنة بالجودة.',d:'منذ شهر'},
+  {n:'ريهام سعيد',s:5,t:'الجنزبيل فيه بيدفئ البشرة ويفتحها.',d:'منذ شهر'},
+  {n:'دينا يوسف',s:5,t:'الخطوط بدأت تخف بعد شهر استخدام.',d:'منذ شهرين'},
+  {n:'سلمى محمد',s:5,t:'التجديد اللي بيعمله للخلايا محسوس.',d:'منذ شهرين'},
+  {n:'نهاد إبراهيم',s:4,t:'ترطيب ممتاز خاصة في الشتاء.',d:'منذ ٣ شهور'},
+  {n:'هبة طارق',s:5,t:'من أحسن غسيل جسم جربته.',d:'منذ ٣ شهور'},
+  {n:'رانيا عمر',s:5,t:'اللون بقى أوحد وأحسن.',d:'منذ ٤ شهور'},
+  {n:'ريم فتحي',s:5,t:'ممتاز للبشرة الجافة.',d:'منذ ٤ شهور'},
+  {n:'إيمان حسن',s:5,t:'بستخدمه بعد الاستحمام وبشرتي حريرية.',d:'منذ ٥ شهور'},
+  {n:'نيفين خليل',s:4,t:'رائحته فاكهة وحلوة جداً.',d:'منذ ٥ شهور'},
+  {n:'هناء سالم',s:5,t:'آمن وطبيعي ومفيش أي تحسس.',d:'منذ ٦ شهور'},
+  {n:'شيرين يوسف',s:5,t:'النتيجة تتكلم عن نفسها.',d:'منذ ٦ شهور'},
+  {n:'منال أحمد',s:5,t:'يستحق كل توصية.',d:'منذ ٧ شهور'},
+ ],
+ be2:[
+  {n:'منال سعيد',s:5,t:'وجهي بقى نقي جداً ومفيش رؤوس سوداء خالص.',d:'منذ أسبوعين'},
+  {n:'هناء محمود',s:5,t:'الكولاجين محسوس، الوجه صح وممتلئ.',d:'منذ شهر'},
+  {n:'فاطمة كريم',s:5,t:'الزيوت الزائدة قلت بشكل ملحوظ.',d:'منذ شهر'},
+  {n:'نور الهدى',s:4,t:'رائحة التوت منعشة ومميزة.',d:'منذ شهرين'},
+  {n:'ريهام حسن',s:5,t:'بستخدمه صباح ومساء والفرق واضح.',d:'منذ شهرين'},
+  {n:'سلمى علي',s:5,t:'بشرتي بقت أنعم وأوضح.',d:'منذ ٣ شهور'},
+  {n:'نجلاء يوسف',s:4,t:'لطيف على البشرة الحساسة.',d:'منذ ٣ شهور'},
+  {n:'نادية أحمد',s:5,t:'الكولاجين زاد والجلد بقى كثيف.',d:'منذ ٤ شهور'},
+  {n:'هدى سامي',s:5,t:'مناسب جداً للبشرة الدهنية.',d:'منذ ٤ شهور'},
+  {n:'إيمان إبراهيم',s:5,t:'آمن ومفيش أي تهيج.',d:'منذ ٥ شهور'},
+  {n:'شيرين فتحي',s:4,t:'بسعر معقول وجودة عالية.',d:'منذ ٥ شهور'},
+  {n:'لمياء سيد',s:5,t:'يستحق التجربة بكل تأكيد.',d:'منذ ٦ شهور'},
+  {n:'مرسال محمد',s:5,t:'النتيجة جاءت أسرع مما توقعت.',d:'منذ ٦ شهور'},
+  {n:'رنا طارق',s:5,t:'أنصح بيه وبكل منتجات Berries Kit.',d:'منذ ٧ شهور'},
+  {n:'ضحى عمر',s:5,t:'غيرت روتين العناية بوجهي لصالحي.',d:'منذ ٧ شهور'},
+ ],
+ s1:[
+  {n:'أحمد خالد',s:5,t:'الرائحة بتيجي عليك طول اليوم، ومبلل بشكل ممتاز.',d:'منذ أسبوع'},
+  {n:'كريم علي',s:5,t:'حل مشكلة حب الشباب على الظهر تماماً بعد شهر.',d:'منذ أسبوعين'},
+  {n:'محمد سامي',s:5,t:'أحسن بديل عن كل الـ body sprays التجارية.',d:'منذ شهر'},
+  {n:'عمر إبراهيم',s:5,t:'استخدمته لما كنت بعاني من الحكة وحل المشكلة.',d:'منذ شهر'},
+  {n:'ياسر محمود',s:4,t:'الصندل الهندي بيدي رائحة راقية ومميزة.',d:'منذ شهرين'},
+  {n:'مصطفى عادل',s:5,t:'بشرتي بقت أنعم وأصح.',d:'منذ شهرين'},
+  {n:'إيهاب فوزي',s:5,t:'الأكزيما اللي كانت عندي خفت كتير.',d:'منذ ٣ شهور'},
+  {n:'هاني سعد',s:4,t:'طبيعي ومفيش مواد كيميائية.',d:'منذ ٣ شهور'},
+  {n:'وليد حسن',s:5,t:'الترطيب بيدوم ليومين كاملين.',d:'منذ ٤ شهور'},
+  {n:'طارق نبيل',s:5,t:'من أحسن منتجات العناية بالجسم.',d:'منذ ٤ شهور'},
+  {n:'رامي صادق',s:5,t:'حروق الشمس اللي كانت عندي اتحسنت.',d:'منذ ٥ شهور'},
+  {n:'سيد رضا',s:4,t:'ممتاز للبشرة الجافة والحساسة.',d:'منذ ٥ شهور'},
+  {n:'شادي عمر',s:5,t:'يستحق كل جنيه.',d:'منذ ٦ شهور'},
+  {n:'زياد أحمد',s:5,t:'بنصح كل رجل يجربه.',d:'منذ ٦ شهور'},
+  {n:'نبيل فريد',s:5,t:'من أحسن مشترياتي.',d:'منذ ٧ شهور'},
+ ],
+ s2:[
+  {n:'فاطمة حسن',s:5,t:'الرائحة أنثوية ورائعة وبتدوم لساعات طويلة.',d:'منذ أسبوع'},
+  {n:'ريهام أحمد',s:5,t:'الانتعاش اللي بيديه مختلف عن أي منتج تاني.',d:'منذ أسبوعين'},
+  {n:'أسماء إبراهيم',s:5,t:'بشرتي بقت أنعم وأكثر ترطيباً.',d:'منذ شهر'},
+  {n:'نجلاء محمد',s:4,t:'رائحة الصندل الهندي رائعة جداً.',d:'منذ شهر'},
+  {n:'هبة طارق',s:5,t:'التهيج اللي كان عندي راح.',d:'منذ شهرين'},
+  {n:'إيمان سامي',s:5,t:'مناسب للاستخدام اليومي.',d:'منذ شهرين'},
+  {n:'سمر خالد',s:5,t:'ترطيب عميق ورائحة تدوم.',d:'منذ ٣ شهور'},
+  {n:'رانيا عمر',s:4,t:'آمن وطبيعي.',d:'منذ ٣ شهور'},
+  {n:'شيرين يوسف',s:5,t:'شفاء البشرة محسوس من الأسبوع الأول.',d:'منذ ٤ شهور'},
+  {n:'ليلى حسن',s:5,t:'بقى ثابت في روتيني اليومي.',d:'منذ ٤ شهور'},
+  {n:'دعاء فتحي',s:5,t:'يستحق التجربة والتوصية.',d:'منذ ٥ شهور'},
+  {n:'منى سيد',s:5,t:'أنصح بيه لكل بنت.',d:'منذ ٥ شهور'},
+  {n:'هدى علي',s:4,t:'ممتاز وسعر معقول.',d:'منذ ٦ شهور'},
+  {n:'نهال سالم',s:5,t:'رائحته تبقى معاك طول اليوم.',d:'منذ ٦ شهور'},
+  {n:'إيناس طارق',s:5,t:'تجربة ممتعة ومريحة.',d:'منذ ٧ شهور'},
+ ],
+ l1:[
+  {n:'ناهد إسماعيل',s:5,t:'أحسن لوشن جربته، بيدي نعومة من أول مرة وبيدوم طول اليوم.',d:'منذ أسبوع'},
+  {n:'سوسن مجدي',s:5,t:'الترطيب بيدوم لأكثر من 12 ساعة، ما عاد عندي جفاف.',d:'منذ أسبوعين'},
+  {n:'نانسي عادل',s:5,t:'رائحة اللافندر بتريحك نفسياً وبيلين الجلد.',d:'منذ شهر'},
+  {n:'وفاء سليم',s:5,t:'بستخدمه بعد الاستحمام مباشرة والفرق واضح على الجلد.',d:'منذ شهر'},
+  {n:'هبة رمزي',s:4,t:'الترهلات بدأت تقل بعد شهرين استخدام.',d:'منذ شهرين'},
+  {n:'إيمان صادق',s:5,t:'مضاد الفطريات شغلته واضحة.',d:'منذ شهرين'},
+  {n:'ريهام الشاذلي',s:5,t:'من أفضل لوشنات الجسم في السوق.',d:'منذ ٣ شهور'},
+  {n:'سلمى فهمي',s:5,t:'الزبدة الشيا فيه بتعمل فرق حقيقي.',d:'منذ ٣ شهور'},
+  {n:'مها صلاح',s:4,t:'آمن للبشرة الحساسة والجافة.',d:'منذ ٤ شهور'},
+  {n:'دينا فتحي',s:5,t:'الجلد بقى مرن ونضر.',d:'منذ ٤ شهور'},
+  {n:'شيرين حسن',s:5,t:'بيحمي من الأشعة فوق البنفسجية.',d:'منذ ٥ شهور'},
+  {n:'هناء يوسف',s:5,t:'يستحق كل جنيه.',d:'منذ ٥ شهور'},
+  {n:'نهال محمد',s:5,t:'من أكثر منتجات العناية تأثيراً.',d:'منذ ٦ شهور'},
+  {n:'نجلاء طارق',s:4,t:'رائحة لطيفة ومريحة وترطيب استثنائي.',d:'منذ ٦ شهور'},
+  {n:'رنا سالم',s:5,t:'أنصح بيه لكل بنت.',d:'منذ ٧ شهور'},
+ ],
+ pk1:[
+  {n:'هدير محمد',s:5,t:'هدية مثالية لأمي وانبسطت جداً بكل المنتجات.',d:'منذ أسبوعين'},
+  {n:'غادة يوسف',s:5,t:'جربت كل المنتجات وكلها تمام على بعض.',d:'منذ شهر'},
+  {n:'إيمان خليل',s:5,t:'الشنطة أنيقة جداً ومناسب جداً كهدية فاخرة.',d:'منذ شهر'},
+  {n:'ريم فتحي',s:4,t:'توفير ممتاز مقارنة بشراء كل منتج لوحده.',d:'منذ شهرين'},
+  {n:'نادية حسن',s:5,t:'أهديته لصاحبتي وانبسطت جداً وعايزة تعيد تجربته.',d:'منذ شهرين'},
+  {n:'سمر عمر',s:5,t:'الكيت كاملة شاملة لكل احتياجات العناية.',d:'منذ ٣ شهور'},
+  {n:'شيرين أحمد',s:4,t:'تجربة رائعة لمعرفة كل المنتجات.',d:'منذ ٣ شهور'},
+  {n:'منال محمود',s:5,t:'هدية مميزة لأي مناسبة.',d:'منذ ٤ شهور'},
+  {n:'لمياء يوسف',s:5,t:'المنتجات مترتبة وجميلة في الشنطة.',d:'منذ ٤ شهور'},
+  {n:'هبة سالم',s:5,t:'اشتريته لخطيبتي وانبسطت كتير.',d:'منذ ٥ شهور'},
+  {n:'دعاء طارق',s:5,t:'يستحق السعر ألف مرة.',d:'منذ ٥ شهور'},
+  {n:'نجلاء إبراهيم',s:4,t:'تغليف أنيق ومحكم.',d:'منذ ٦ شهور'},
+  {n:'مرفت خليل',s:5,t:'أنصح بيه كهدية في كل مناسبة.',d:'منذ ٦ شهور'},
+  {n:'رانيا سيد',s:5,t:'بتبعث وجه مضيء وهدية مفيدة.',d:'منذ ٧ شهور'},
+  {n:'هدى فتحي',s:5,t:'من أجمل هدايا ممكن تتقدمها.',d:'منذ ٧ شهور'},
+ ],
+ el1:[
+  {n:'باسم عصفور',s:5,t:'نزلت 9 كيلو في شهر ونص مع الكارديو، شغال بجد صح!',d:'منذ أسبوع'},
+  {n:'رامي حسن',s:5,t:'الطاقة اتحسنت كتير جداً وحرق الدهون واضح.',d:'منذ أسبوعين'},
+  {n:'كريم عادل',s:5,t:'الدهون العنيدة في البطن بدأت تختفي بعد 3 أسابيع.',d:'منذ شهر'},
+  {n:'طارق نبيل',s:5,t:'بصراحة من أحسن المنتجات اللي جربتها في التخسيس.',d:'منذ شهر'},
+  {n:'وليد سمير',s:5,t:'مع الريجيم اشتغل ممتاز جداً وما في أي آثار جانبية.',d:'منذ شهرين'},
+  {n:'أشرف مجدي',s:4,t:'حرق الدهون محسوس من الأسبوع الثاني.',d:'منذ شهرين'},
+  {n:'محسن طارق',s:5,t:'الهضم تحسن بشكل ملحوظ.',d:'منذ ٣ شهور'},
+  {n:'ياسر إبراهيم',s:5,t:'للدهون العنيدة ده الحل.',d:'منذ ٣ شهور'},
+  {n:'فارس علي',s:4,t:'بيعطي طاقة كافية للكارديو.',d:'منذ ٤ شهور'},
+  {n:'صلاح فهمي',s:5,t:'التمثيل الغذائي اتسرع بشكل ملحوظ.',d:'منذ ٤ شهور'},
+  {n:'أيمن رشاد',s:5,t:'نزلت 15 كيلو في ثلاثة شهور.',d:'منذ ٥ شهور'},
+  {n:'عمر الشيخ',s:4,t:'نتيجة حقيقية وملموسة.',d:'منذ ٥ شهور'},
+  {n:'حسام عزيز',s:5,t:'أنصح بيه كل شخص عنده مشكلة في الدهون.',d:'منذ ٦ شهور'},
+  {n:'زياد محمود',s:5,t:'بيشتغل حتى بدون حمية صارمة.',d:'منذ ٦ شهور'},
+  {n:'خالد صلاح',s:5,t:'من أفضل منتجات حرق الدهون الطبيعية.',d:'منذ ٧ شهور'},
+ ],
+ el2:[
+  {n:'عمرو الشرقاوي',s:5,t:'القوة زادت بشكل ملحوظ من أول أسبوعين، حاسس بفرق حقيقي.',d:'منذ أسبوع'},
+  {n:'مصطفى أحمد',s:5,t:'التعافي بين التمارين بقى أسرع بكتير.',d:'منذ أسبوعين'},
+  {n:'إسلام علي',s:5,t:'أحسن كرياتين جربته، النتيجة واضحة على الأداء.',d:'منذ شهر'},
+  {n:'يوسف محمد',s:5,t:'زدت 4 كيلو في شهر مع التمرين المنتظم.',d:'منذ شهر'},
+  {n:'حمزة عصفور',s:4,t:'القدرة على التحمل زادت بشكل ملحوظ.',d:'منذ شهرين'},
+  {n:'فادي سالم',s:5,t:'من أفضل الكرياتين في السوق.',d:'منذ شهرين'},
+  {n:'كريم طارق',s:5,t:'بيذوب في الماء بسهولة وما بيسبب أي مشاكل.',d:'منذ ٣ شهور'},
+  {n:'علاء يحيى',s:4,t:'شغال 100% مع التمارين الثقيلة.',d:'منذ ٣ شهور'},
+  {n:'نضال صادق',s:5,t:'نمو العضلات واضح بعد شهرين.',d:'منذ ٤ شهور'},
+  {n:'سليم رزق',s:5,t:'للنحيفين ده الاختيار الأمثل.',d:'منذ ٤ شهور'},
+  {n:'فيصل عمر',s:4,t:'امتصاصه سريع وبيشتغل بكفاءة.',d:'منذ ٥ شهور'},
+  {n:'محمود نجيب',s:5,t:'زيادة الكتلة العضلية محسوسة.',d:'منذ ٥ شهور'},
+  {n:'خلدون رفيق',s:5,t:'أنصح بيه لكل نحيف.',d:'منذ ٦ شهور'},
+  {n:'هيثم فاروق',s:5,t:'تحسن الأداء واضح من الأسبوع الأول.',d:'منذ ٦ شهور'},
+  {n:'وسيم علي',s:5,t:'من أفضل مشترياتي للتمرين.',d:'منذ ٧ شهور'},
+ ],
+ el3:[
+  {n:'أحمد النجار',s:5,t:'أخيراً وجدت حلاً حقيقياً للنحافة، زدت 6 كيلو في شهرين!',d:'منذ أسبوعين'},
+  {n:'محمد الصواف',s:5,t:'النكهتين تمام والخلطة ليها ما بعدها.',d:'منذ شهر'},
+  {n:'حامد إبراهيم',s:5,t:'سعرات عالية وبروتين كافي، مثالي للنحيفين.',d:'منذ شهر'},
+  {n:'رضا علاء',s:5,t:'بستخدمه بعد التمرين مباشرة والفرق واضح.',d:'منذ شهرين'},
+  {n:'صلاح عزيز',s:4,t:'المقدار الواحد بيديك كمية كبيرة من السعرات.',d:'منذ شهرين'},
+  {n:'ماجد حسين',s:5,t:'زدت 3 كيلو في أول شهر.',d:'منذ ٣ شهور'},
+  {n:'سامر فريد',s:5,t:'بيتخلط كويس وما بيعمل نفاخة.',d:'منذ ٣ شهور'},
+  {n:'طارق راغب',s:4,t:'52 سكوب بسعر معقول جداً.',d:'منذ ٤ شهور'},
+  {n:'خالد عيد',s:5,t:'من أفضل الـ gainers في السوق.',d:'منذ ٤ شهور'},
+  {n:'فتحي جمال',s:5,t:'بناء الكتلة العضلية واضح.',d:'منذ ٥ شهور'},
+  {n:'ياسين عمر',s:4,t:'طعمه كويس ومرضيش أي آثار جانبية.',d:'منذ ٥ شهور'},
+  {n:'منير عبدالله',s:5,t:'زيادة الوزن جاءت بشكل صحي.',d:'منذ ٦ شهور'},
+  {n:'تيسير محمد',s:5,t:'أنصح بيه لكل نحيف يريد أن يزيد.',d:'منذ ٦ شهور'},
+  {n:'بسام طارق',s:5,t:'النتيجة فاقت توقعاتي.',d:'منذ ٧ شهور'},
+  {n:'عبدالله فهد',s:5,t:'من أحسن مشترياتي في رحلة التضخيم.',d:'منذ ٧ شهور'},
+ ],
+ el4:[
+  {n:'ماجد سالم',s:5,t:'أحسن بروتين للتخسيس، حافظت على عضلاتي وأنا بنزل.',d:'منذ أسبوع'},
+  {n:'نادر عزيز',s:5,t:'بدون دهون ومذاقه ممتاز، بستخدمه يومياً بعد التمرين.',d:'منذ أسبوعين'},
+  {n:'أيمن فتحي',s:5,t:'التعافي بعد التمرين أسرع بكتير منذ بدأت فيه.',d:'منذ شهر'},
+  {n:'تامر حسام',s:5,t:'جودة ممتازة وسعر معقول مقارنة بالسوق.',d:'منذ شهر'},
+  {n:'ضياء عمر',s:4,t:'الامتصاص السريع محسوس.',d:'منذ شهرين'},
+  {n:'رشيد علي',s:5,t:'النكهتين لذيذتين وما فيش بعد الطعم.',d:'منذ شهرين'},
+  {n:'حسن محمود',s:5,t:'من أنقى البروتينات في السوق.',d:'منذ ٣ شهور'},
+  {n:'عادل رضا',s:4,t:'يذوب بسهولة في الماء واللبن.',d:'منذ ٣ شهور'},
+  {n:'فراس خليل',s:5,t:'الكتلة العضلية محفوظة حتى في فترة التقطيع.',d:'منذ ٤ شهور'},
+  {n:'وسيم يحيى',s:5,t:'أنصح بيه لكل متمرن يريد نتائج حقيقية.',d:'منذ ٤ شهور'},
+  {n:'أسامة صادق',s:5,t:'من أفضل الـ isolates بالسعر ده.',d:'منذ ٥ شهور'},
+  {n:'ليث عمران',s:4,t:'الصفر دهون محسوس في التكوين الجسدي.',d:'منذ ٥ شهور'},
+  {n:'حيدر فاروق',s:5,t:'بيساعد في الحمية والتحكم في الوزن.',d:'منذ ٦ شهور'},
+  {n:'كمال طارق',s:5,t:'النتيجة فعلية ومحسوسة.',d:'منذ ٦ شهور'},
+  {n:'عمار ياسين',s:5,t:'من أحسن مشترياتي في العام ده.',d:'منذ ٧ شهور'},
+ ],
+};
+
+/* Flat lookup */
+const PRODUCTS={};
+KITS.forEach(k=>k.items.forEach(p=>PRODUCTS[p.id]={...p,kit:k.label}));
+ELEVATE.forEach(p=>PRODUCTS[p.id]={...p,kit:'Elevate'});
+
+/* Card background gradients */
+const CARD_GRADS={
+ b1:'linear-gradient(135deg,#1B4332,#2D6A4F)',
+ b2:'linear-gradient(135deg,#155235,#38826A)',
+ b3:'linear-gradient(135deg,#1D5C40,#47A374)',
+ e1:'linear-gradient(135deg,#4A1942,#7B3472)',
+ e2:'linear-gradient(135deg,#5C1A4A,#8B4060)',
+ e3:'linear-gradient(135deg,#3A2060,#6A4A9A)',
+ be1:'linear-gradient(135deg,#7B1D45,#B84070)',
+ s1:'linear-gradient(135deg,#3D2C1E,#7A5535)',
+ s2:'linear-gradient(135deg,#4A2A28,#8A4A45)',
+ l1:'linear-gradient(135deg,#1B3A4B,#3A7A9A)',
+ pk1:'linear-gradient(135deg,#3D1E5A,#7A3A9A)',
+ el1:'linear-gradient(135deg,#7B1D1D,#C0392B)',
+ el2:'linear-gradient(135deg,#1a2d6e,#3A5ABE)',
+ el3:'linear-gradient(135deg,#3D2A1A,#7A5030)',
+ el4:'linear-gradient(135deg,#1B3A4B,#3A7080)',
+};
+
+/* ══════════ STATE ══════════ */
+let USER=null;
+
+/* ══════════ THEME ══════════ */
+function initTheme(){
+  const t=localStorage.getItem('pf_theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+}
+document.getElementById('theme-btn').addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='light'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('pf_theme',next);
+});
+
+/* ══════════ POPUP ══════════ */
+let _g=null,_b=null,_p=null;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initTheme();
+  try{USER=JSON.parse(localStorage.getItem('pf_u')||'null')}catch{}
+  if(USER){closePopup();applyBar();go('home')}
+  else{startPopup()}
+});
+
+function startPopup(){
+  _g=_b=_p=null;
+  goStep(0);
+
+  // S0
+  const n0=document.getElementById('s0-btn');
+  n0.onclick=()=>{
+    const v=document.getElementById('p-name').value.trim();
+    if(!v){document.getElementById('p-name').classList.add('err');return}
+    goStep(1);
+  };
+  document.getElementById('p-name').addEventListener('input',()=>document.getElementById('p-name').classList.remove('err'));
+  document.getElementById('p-name').addEventListener('keydown',e=>{if(e.key==='Enter')n0.click()});
+
+  // S1
+  document.querySelectorAll('#s1 .cbtn').forEach(b=>b.addEventListener('click',()=>{
+    _g=b.dataset.g;
+    document.querySelectorAll('#s1 .cbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+  }));
+  document.getElementById('s1-btn').onclick=()=>{
+    if(!_g){flash('#s1 .cbtn');return}
+    goStep(2);
+  };
+
+  // S2
+  document.querySelectorAll('#s2 .cbtn').forEach(b=>b.addEventListener('click',()=>{
+    _b=b.dataset.b;
+    document.querySelectorAll('#s2 .cbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+  }));
+  document.getElementById('s2-btn').onclick=()=>{
+    if(!_b){flash('#s2 .cbtn');return}
+    goStep(3);
+  };
+
+  // S3
+  document.querySelectorAll('#s3 .crow').forEach(b=>b.addEventListener('click',()=>{
+    _p=b.dataset.p;
+    document.querySelectorAll('#s3 .crow').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+  }));
+  document.getElementById('s3-btn').onclick=()=>{
+    if(!_p){flash('#s3 .crow');return}
+    const name=document.getElementById('p-name').value.trim();
+    USER={name,gender:_g,body:_b,problem:_p};
+    localStorage.setItem('pf_u',JSON.stringify(USER));
+    const{recs,why}=smartRecs(USER);
+    document.getElementById('w-em').textContent=_g==='female'?'🌸':'💪';
+    document.getElementById('w-name').textContent=`أهلاً يا ${name}!`;
+    document.getElementById('w-sub').textContent=`على أساس إجاباتك جاهزة ليك توصيات مخصصة 100%`;
+    document.getElementById('w-rec').innerHTML=why;
+    applyBar();
+    goStep(4);
+  };
+  document.getElementById('s4-btn').onclick=()=>{closePopup();go('home')};
+}
+
+function goStep(n){
+  [0,1,2,3,4].forEach(i=>{
+    const s=document.getElementById(`s${i}`);
+    if(s)s.classList.toggle('on',i===n);
+    const d=document.getElementById(`dot${i}`);
+    if(d)d.classList.toggle('on',i===n);
+  });
+}
+function flash(sel){
+  document.querySelectorAll(sel).forEach(b=>{
+    b.style.borderColor='var(--red)';
+    setTimeout(()=>b.style.borderColor='',1300);
+  });
+}
+function closePopup(){
+  const el=document.getElementById('popup');
+  el.classList.add('closing');
+  setTimeout(()=>el.classList.add('gone'),300);
+}
+
+/* ══════════ SMART RECS ══════════ */
+function smartRecs(user){
+  const{gender,body,problem}=user;
+  let recs=[],why='';
+  if(problem==='thinness'){
+    recs=['el3','el2','el4','b1'];
+    why=`بناءً على مشكلة النحافة، <strong>MaxBulk</strong> هيرفع سعراتك وبيبني العضلة بشكل حقيقي، و<strong>Creatine</strong> هيزيد قوتك. ⚠️ مننصحش بـ Burnmode خالص.`;
+  }else if(problem==='fat'){
+    recs=['el1','el4','s1','l1'];
+    why=`لمشكلة الدهون، <strong>Burnmode</strong> هيحرق الدهون العنيدة و<strong>ISO Pro</strong> هيحافظ على عضلاتك. ⚠️ تجنب MaxBulk لأنه بيزيد السعرات.`;
+  }else if(problem==='hair'){
+    recs=['b2','b3','b1','pk1'];
+    why=`لتساقط الشعر والجفاف، <strong>Be Strong Kit</strong> الكاملة هي الحل المثالي. الكرياتين في المكيف يقوي الشعر من الجذر والـ Hair Mist يرطبه طول اليوم.`;
+  }else if(problem==='skin'){
+    recs=['l1','s1','e1','be1'];
+    why=`لجفاف البشرة، <strong>Your Love Lotion</strong> يعطي ترطيب يدوم 12 ساعة و<strong>Wiseman Splash</strong> بالصندل يعالج الجفاف والشيخوخة المبكرة.`;
+  }else if(problem==='acne'){
+    recs=['e3','e2','s1','be1'];
+    why=`لحب الشباب، <strong>Face Wash</strong> بزيت شجرة الشاي مضاد للبكتيريا و<strong>Face Scrub</strong> بالبابايا ينظف المسام. <strong>Wiseman Splash</strong> لحب شباب الجسم.`;
+  }else if(problem==='energy'){
+    recs=['el2','el4','el1','el3'];
+    why=`لضعف الطاقة، <strong>Creatine</strong> يزيد طاقتك في التمرين فوراً و<strong>ISO Pro</strong> يعطيك البروتين للنشاط والتعافي.`;
+  }else{
+    recs=gender==='female'?['l1','b2','s1','e2']:['el1','el4','el2','el3'];
+    why=`اخترنا ليك أكثر المنتجات شمولاً ونتائج. كل منتج طبيعي 100% وآمن للاستخدام اليومي.`;
+  }
+  return{recs:[...new Set(recs)].slice(0,4),why};
+}
+
+/* ══════════ BAR ══════════ */
+function applyBar(){
+  if(!USER)return;
+  const bar=document.getElementById('bar');
+  bar.innerHTML=USER.gender==='female'
+    ?`أهلاً يا <strong>${USER.name}</strong> ❤️ — توصياتك المخصصة في انتظارك`
+    :`أهلاً يا <strong>${USER.name}</strong> 💪 — اكتشف قوتك مع PUREFORM`;
+  bar.classList.add('on');
+}
+
+/* ══════════ ROUTING ══════════ */
+function go(page,id){
+  const app=document.getElementById('app');
+  const fns={home:renderHome,beauty:renderBeauty,elevate:renderElevate,tips:renderTips,contact:renderContact,product:()=>renderProduct(id)};
+  app.innerHTML=(fns[page]||renderHome)();
+  app.firstElementChild?.classList.add('rv','in');
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.querySelectorAll('.n-lnk').forEach(el=>el.classList.remove('cur'));
+  const map={home:'الرئيسية',beauty:'RZN Beauty',elevate:'Elevate',tips:'Tips & Goals',contact:'تواصل معنا'};
+  const pg=page==='product'?(ELEVATE.some(p=>p.id===id)?'elevate':'beauty'):page;
+  document.querySelectorAll('.n-lnk').forEach(el=>{if(el.textContent.trim()===(map[pg]||''))el.classList.add('cur')});
+  setTimeout(initReveal,60);
+}
+function toggleDrawer(){
+  document.getElementById('drawer').classList.toggle('open');
+  document.getElementById('ham').classList.toggle('open');
+}
+function initReveal(){
+  const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.07});
+  document.querySelectorAll('.rv:not(.in)').forEach(el=>io.observe(el));
+}
+
+/* ══════════ HOME ══════════ */
+function renderHome(){
+  const best=Object.values(PRODUCTS).filter(p=>p.best);
+  return`<div>
+<section class="hero">
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
+  <div class="hero-c">
+    <div class="hero-lbl">Natural Power · Real Results</div>
+    <h1 class="hero-h1">PUREFORM</h1>
+    <p class="hero-tagline">by Risen Live</p>
+    <div class="hero-verse">
+      <p>﴿ وَأَنْ لَيْسَ لِلْإِنْسَانِ إِلَّا مَا سَعَى (39)<br>وَأَنَّ سَعْيَهُ سَوْفَ يُرَى (40)<br>ثُمَّ يُجْزَاهُ الْجَزَاءَ الْأَوْفَى (41) ﴾</p>
+      <cite>سورة النجم</cite>
+    </div>
+    <div class="hero-badges">
+      <span class="hbadge"><i class="fas fa-leaf"></i> طبيعي 100%</span>
+      <span class="hbadge"><i class="fas fa-shield-alt"></i> آمن لكل البشرة</span>
+      <span class="hbadge"><i class="fas fa-check-circle"></i> نتائج مجربة</span>
+    </div>
+    <div class="hero-btns">
+      <button class="btn btn-gold" onclick="go('beauty')">اطلب دلوقتي 🚀</button>
+      <button class="btn btn-ghost" onclick="go('tips')">ابدأ رحلتك 💪</button>
+    </div>
+  </div>
+  <div class="scroll-hint"><i class="fas fa-chevron-down"></i></div>
+</section>
+
+${renderRecs()}
+
+<section class="sec bg-warm">
+  <div class="mw">
+    <div class="sec-hdr rv">
+      <span class="sec-lbl">الأكثر مبيعاً</span>
+      <h2 class="sec-h">Best <em>Sellers</em></h2>
+      <p class="sec-d">منتجاتنا اللي حققت أعلى رضا عملائنا بنتائج حقيقية ومجربة</p>
+    </div>
+    <div class="pgrid">
+      ${best.map((p,i)=>makeCard(p,i)).join('')}
+    </div>
+  </div>
+</section>
+
+<div class="trust-strip">
+  ${[['fas fa-seedling','طبيعي 100%','مكونات نقية بدون مواد صناعية'],
+     ['fas fa-shield-heart','آمن وموثوق','مجرب على آلاف العملاء'],
+     ['fas fa-chart-line','نتائج مجربة','فرق حقيقي ومحسوس'],
+     ['fas fa-truck-fast','توصيل سريع','لجميع المحافظات']]
+    .map(([ic,h,p])=>`<div class="tc rv"><i class="${ic}"></i><h5>${h}</h5><p>${p}</p></div>`).join('')}
+</div>
+
+${renderShipping()}
+
+<div class="stmt-sec">
+  <p class="stmt-q rv">"احنا مش بنبيع منتجات وبس —<br>احنا بنساعدك تبقى <em>أفضل نسخة من نفسك</em>"</p>
+  <span class="stmt-src rv">PUREFORM · Risen Live</span>
+  <br>
+  <button class="btn btn-gold rv" onclick="go('contact')" style="margin-top:2rem">اطلب الآن 🚀</button>
+</div>
+</div>`;
+}
+
+/* ══════════ RECS ══════════ */
+function renderRecs(){
+  if(!USER)return'';
+  const{recs,why}=smartRecs(USER);
+  const f=USER.gender==='female';
+  const cross=f
+    ?`ولو عندك أحد من الرجالة 👨 — <a href="#" onclick="go('elevate');return false">Elevate</a> مناسب ليهم جداً 💪`
+    :`ولو عندك زوجة / خطيبة / أخت 👩 — <a href="#" onclick="go('beauty');return false">RZN Beauty</a> هدية مثالية 🎁`;
+  return`
+<section class="recs-sec">
+  <div class="mw">
+    <div class="recs-hdr rv">
+      <div class="recs-av">${f?'👩':'👨'}</div>
+      <div>
+        <div class="recs-title">توصيات خصيصاً <span>ليك</span> يا ${USER.name}</div>
+        <div style="font-size:.75rem;color:var(--ink3);font-weight:300;margin-top:.15rem">بناءً على مشكلتك وحالتك الجسدية</div>
+      </div>
+    </div>
+    <div class="recs-row rv d1">
+      ${recs.map(id=>{const p=PRODUCTS[id];if(!p)return'';return`
+      <div class="ri" onclick="go('product','${id}')">
+        <span class="ri-em">${p.em}</span>
+        <div><div class="ri-nm">${p.nm}</div><div class="ri-pr">${p.pr.toLocaleString()} جنيه</div></div>
+      </div>`;}).join('')}
+    </div>
+    <div class="why-box rv d2">${why}</div>
+    <div class="cross-box rv d3">${cross}</div>
+  </div>
+</section>`;
+}
+
+/* ══════════ SHIPPING ══════════ */
+function renderShipping(){
+  return`
+<div class="ship-sec">
+  <div class="mw">
+    <div class="sec-hdr c rv">
+      <span class="sec-lbl">خدمة الشحن</span>
+      <h2 class="sec-h lgt">وصّلناهالك <em>أينما كنت</em></h2>
+    </div>
+    <div class="ship-grid">
+      ${[['fas fa-truck-fast','شحن سريع لكل مصر','توصيل احترافي لجميع محافظات الجمهورية'],
+         ['fas fa-globe','شحن دولي +16 دولة','نوصّل لأكثر من 16 دولة حول العالم'],
+         ['fas fa-box-open','تغليف آمن ومحكم','منتجاتك بتوصلك سليمة 100%'],
+         ['fas fa-bolt','تجهيز الطلبات سريع','بنجهز طلبك في أسرع وقت ممكن']]
+        .map(([i,h,p])=>`<div class="sc rv"><div class="sc-i-wrap"><i class="${i}"></i></div><h4>${h}</h4><p>${p}</p></div>`).join('')}
+    </div>
+  </div>
+</div>`;
+}
+
+/* ══════════ PRODUCT CARD ══════════ */
+function makeCard(p,i=0){
+  const grad=CARD_GRADS[p.id]||'linear-gradient(135deg,#1B4332,#2D6A4F)';
+  const bestBadge=p.badge?`<span class="pb-best">${p.badge}</span>`:'';
+  const hotBadge=p.best?`<span class="pb-hot"><i class="fas fa-fire" style="font-size:.55rem"></i> مطلوب</span>`:'';
+  const stars=p.best?'★★★★★':'★★★★☆';
+  const save=p.orig-p.pr;
+  const imgEl=p.img?`<img class="pc-prod-img" src="${p.img}" alt="${p.nm}" loading="lazy">`:'';
+  return`
+<div class="pcard rv d${i%4}" onclick="go('product','${p.id}')">
+  <div class="pc-top" style="background:${grad}">
+    ${imgEl}
+    <span class="pc-em">${p.em}</span>
+    <div class="pc-overlay"></div>
+    <div class="pc-badges">${bestBadge}${hotBadge}</div>
+    <div class="pc-stars-overlay">${stars}</div>
+    <div class="pc-discount">وفر ${save} ج</div>
+  </div>
+  <div class="pc-body">
+    <div class="pc-kit">${p.kit}</div>
+    <div class="pc-name">${p.nm}</div>
+    <div class="pc-pills">${(p.tags||[]).slice(0,3).map(t=>`<span class="pc-pill">${t}</span>`).join('')}</div>
+    <div class="pc-benefits">${(p.benefits||[]).slice(0,3).map(b=>`<div class="pc-ben">${b}</div>`).join('')}</div>
+    <div class="pc-foot">
+      <div class="pc-prices">
+        <div class="pc-price">${p.pr.toLocaleString()}<sup> جنيه</sup></div>
+        <div class="pc-orig">${p.orig.toLocaleString()} ج</div>
+      </div>
+      <div class="pc-action"><i class="fas fa-arrow-left"></i></div>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ══════════ BEAUTY ══════════ */
+function renderBeauty(){
+  const tabs=KITS.map((k,i)=>`<button class="ktab${i===0?' on':''}" data-k="${k.key}" onclick="switchKit('${k.key}')">${k.icon} ${k.label}</button>`).join('');
+  const panels=KITS.map((k,i)=>`
+<div class="kit-panel${i===0?' on':''}" id="kp-${k.key}">
+  <div class="prows">
+    ${k.items.map(p=>`
+    <div class="prow" onclick="go('product','${p.id}')">
+      <div class="prow-thumb" style="background:${CARD_GRADS[p.id]||'linear-gradient(135deg,#1B4332,#2D6A4F)'}">
+        ${p.img?`<img src="${p.img}" alt="${p.nm}">`:`<span style="font-size:1.6rem">${p.em}</span>`}
+      </div>
+      <div>
+        <div class="pr-nm">${p.nm}${p.badge?`<span class="pr-best-tag">${p.badge}</span>`:''}</div>
+        <div class="pr-tags">${p.tags.slice(0,3).map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
+        <div class="pr-desc">${p.benefits.slice(0,2).join(' · ')}</div>
+      </div>
+      <div class="pr-r">
+        <div>
+          <div class="pr-price">${p.pr.toLocaleString()} ج</div>
+          <div class="pr-orig">${p.orig.toLocaleString()} ج</div>
+        </div>
+        <span class="pr-btn">تفاصيل <i class="fas fa-arrow-left" style="font-size:.6rem"></i></span>
+      </div>
+    </div>`).join('')}
+  </div>
+</div>`).join('');
+  return`<div>
+<div class="ph">
+  <div class="ph-in">
+    <span class="ph-lb">عناية طبيعية · Natural Beauty</span>
+    <h1 class="ph-h">RZN Beauty</h1>
+    <p class="ph-d">كل منتج مصنوع بعناية من أفضل المكونات الطبيعية لأفضل نتيجة</p>
+  </div>
+</div>
+<section class="sec bg-warm">
+  <div class="mw">
+    <div class="kit-tabs rv">${tabs}</div>
+    ${panels}
+    <div class="rv d2">${dlv()}</div>
+  </div>
+</section>
+</div>`;
+}
+function switchKit(k){
+  document.querySelectorAll('.ktab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
+  document.querySelectorAll('.kit-panel').forEach(p=>p.classList.toggle('on',p.id===`kp-${k}`));
+}
+
+/* ══════════ ELEVATE ══════════ */
+function renderElevate(){
+  return`<div>
+<div class="ph" style="background:linear-gradient(135deg,#050D09,#0F2318)">
+  <div class="ph-in">
+    <span class="ph-lb">Performance Nutrition · تغذية رياضية</span>
+    <h1 class="ph-h">Elevate 💪</h1>
+    <p class="ph-d">مكملات طبيعية عالية الجودة — نتائج حقيقية ومجربة لأقصى أداء</p>
+  </div>
+</div>
+<section class="sec" style="background:#070F0A">
+  <div class="mw">
+    <div class="el-grid">
+      ${ELEVATE.map(p=>`
+      <div class="ec rv" onclick="go('product','${p.id}')">
+        <div class="ec-top" style="background:linear-gradient(135deg,${p.color||'#1B4332'},rgba(0,0,0,.3));position:relative;overflow:hidden">
+          ${p.img?`<img src="${p.img}" alt="${p.nm}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;opacity:.35">`:''}
+          <span class="ec-em" style="position:relative;z-index:1">${p.em}</span>
+          <div class="ec-price-blk" style="position:relative;z-index:1">
+            <div class="ec-price">${p.pr.toLocaleString()}<span style="font-size:.65rem;font-family:Tajawal;font-weight:300"> ج</span></div>
+            <div class="ec-orig">${p.orig.toLocaleString()} ج</div>
+            <div class="ec-save">وفر ${p.orig-p.pr} ج</div>
+          </div>
+        </div>
+        <div class="ec-body">
+          <div class="ec-name">${p.nm}</div>
+          <div class="ec-sub">${p.sub}</div>
+          ${p.macros.length?`<div class="ec-macros">${p.macros.map(m=>`<span class="ec-mac">${m}</span>`).join('')}</div>`:''}
+          <div class="ec-uses">${p.uses.map(u=>`<div class="ec-use">${u}</div>`).join('')}</div>
+        </div>
+        <div class="ec-cta" onclick="event.stopPropagation();window.open('https://wa.me/201286332777?text=عايز أطلب ${encodeURIComponent(p.nm)}','_blank')">
+          <i class="fab fa-whatsapp"></i> اطلب الآن
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="rv d2" style="color:rgba(255,255,255,.4);text-align:center;font-size:.84rem;margin-top:1.5rem;padding:1rem;font-weight:300">
+      ولو عندك زوجة / خطيبة / أخت 👩 — <a href="#" onclick="go('beauty');return false" style="color:var(--gold2);font-weight:600">RZN Beauty</a> هدية مثالية ليها 🎁
+    </div>
+    <div class="rv d3">${dlv()}</div>
+  </div>
+</section>
+</div>`;
+}
+
+/* ══════════ TIPS ══════════ */
+function renderTips(){
+  const cards=[
+    {em:'🏗️',h:'للنحيفين — زيادة الوزن',col:'var(--g600)',
+     rows:[
+      {i:'fas fa-plus',t:[{c:'MaxBulk'},' + ',{c:'ISO Pro'},' يومياً']},
+      {i:'fas fa-bolt',t:[{c:'Creatine'},' قبل التمرين بـ ٣٠ دقيقة']},
+      {i:'fas fa-utensils',t:['٥–٦ وجبات صغيرة على مدار اليوم']},
+      {i:'fas fa-tint',t:['٣–٥ لتر ماء يومياً على الأقل']},
+      {i:'fas fa-dumbbell',t:['تمارين مقاومة ٤-٥ أيام أسبوع']},
+      {i:'fas fa-moon',t:['نوم ٧-٩ ساعات — العضلة بتنمو وإنت نايم']},
+     ]},
+    {em:'🔥',h:'لفقدان الدهون',col:'var(--red)',
+     rows:[
+      {i:'fas fa-fire',t:[{c:'Burnmode',s:'var(--red)'},' صباحاً قبل الفطور']},
+      {i:'fas fa-running',t:['Cardio ٣٠-٤٥ دقيقة، ٤-٥ أيام أسبوع']},
+      {i:'fas fa-ban',t:['تقليل السكريات والكارب المكرر']},
+      {i:'fas fa-drumstick-bite',t:[{c:'ISO Pro',s:'var(--red)'},' بروتين نقي بعد التمرين']},
+      {i:'fas fa-moon',t:['نوم منتظم — قلة النوم تزيد الدهون']},
+     ]},
+    {em:'💎',h:'الحفاظ على العضلات',col:'#3A7ABE',
+     rows:[
+      {i:'fas fa-plus',t:[{c:'ISO Pro',s:'#3A7ABE'},' بعد كل تمرين مباشرة']},
+      {i:'fas fa-dumbbell',t:['تمارين مقاومة مستمرة ومنتظمة']},
+      {i:'fas fa-water',t:['ترطيب جيد يومياً']},
+      {i:'fas fa-balance-scale',t:['وجبات متوازنة بروتين + كارب']},
+     ]},
+    {em:'✨',h:'عناية الشعر والبشرة',col:'#9B4F96',
+     rows:[
+      {i:'fas fa-star',t:[{c:'Be Strong',s:'#9B4F96'},' شامبو + مكيف مرتين أسبوع']},
+      {i:'fas fa-spray-can',t:[{c:'Hair Mist',s:'#9B4F96'},' يومياً للحماية والترطيب']},
+      {i:'fas fa-pump-soap',t:[{c:'Body Lotion',s:'#9B4F96'},' بعد الاستحمام مباشرة']},
+      {i:'fas fa-droplet',t:['شرب ٢+ لتر ماء — الجلد يتحسن من الداخل']},
+     ]},
+  ];
+  function mkRow(r,col){
+    const pts=r.t.map(x=>typeof x==='string'?x:`<span class="chip" style="background:${x.s||'var(--g800)'}">${x.c}</span>`).join('');
+    return`<div class="tip-row"><i class="${r.i}" style="color:${col};flex-shrink:0;width:14px;text-align:center"></i><span>${pts}</span></div>`;
+  }
+  return`<div>
+<div class="ph">
+  <div class="ph-in">
+    <span class="ph-lb">Tips & Goals · نصائح وأهداف</span>
+    <h1 class="ph-h">خطتك<br>لهدفك</h1>
+    <p class="ph-d">دليلك الذكي للوصول لهدفك بأسرع وأصح طريقة ممكنة</p>
+  </div>
+</div>
+<section class="sec bg-warm">
+  <div class="mw">
+    <div class="tips-grid">
+      ${cards.map((c,i)=>`
+      <div class="tip-card rv d${i%3}" style="border-top:4px solid ${c.col}">
+        <div class="tip-top"><span class="tip-ico">${c.em}</span><div class="tip-h">${c.h}</div></div>
+        <div class="tip-rows">${c.rows.map(r=>mkRow(r,c.col)).join('')}</div>
+      </div>`).join('')}
+    </div>
+  </div>
+</section>
+<div class="stmt-sec" style="padding:clamp(3.5rem,6vw,5rem) 5%">
+  <p class="stmt-q rv">"البداية أصعب جزء — لكن بعد أول <em>أسبوعين</em> هتشوف الفرق بنفسك"</p>
+  <button class="btn btn-gold rv" onclick="go('contact')" style="margin-top:2rem">اطلب الآن 🚀</button>
+</div>
+</div>`;
+}
+
+/* ══════════ CONTACT ══════════ */
+function renderContact(){
+  const hint=USER?(USER.gender==='female'
+    ?`يا ${USER.name}، تصفحي <a href="#" onclick="go('beauty');return false">RZN Beauty</a> وابعتيلنا عشان نساعدك تختاري 💚`
+    :`يا ${USER.name}، تصفح <a href="#" onclick="go('elevate');return false">Elevate</a> وابعتلنا عشان نساعدك تبدأ صح 💚`)
+    :'';
+  return`
+<div class="contact-wrap">
+  <div class="cc">
+    <div class="cc-logo">PUREFORM</div>
+    <div class="cc-by">by risen live</div>
+    <p class="cc-txt">فريقنا مستعد لمساعدتك في اختيار المنتج الأنسب وإتمام طلبك بسهولة وسرعة.</p>
+    ${hint?`<div class="cross-box" style="margin-bottom:1.5rem;text-align:center">${hint}</div>`:''}
+    <a class="wa-main" href="https://wa.me/201286332777?text=أهلاً PUREFORM 👋 عايز أعرف أكثر" target="_blank">
+      <i class="fab fa-whatsapp"></i> تواصل على واتساب
+    </a>
+    <div class="cc-meta">
+      <div class="cc-mr"><i class="fas fa-phone"></i> 01286332777</div>
+      <div class="cc-mr"><i class="fas fa-globe"></i> شحن دولي لأكثر من 16 دولة 🌍</div>
+      <div class="cc-mr"><i class="fas fa-truck-fast"></i> توصيل سريع لكل المحافظات</div>
+      <div class="cc-mr"><i class="fas fa-clock"></i> رد في أقل من ساعة</div>
+      <div class="cc-mr">
+        <a href="https://www.tiktok.com/@pureform77" target="_blank" style="display:flex;align-items:center;gap:.45rem;color:var(--ink3);text-decoration:none;transition:color var(--t)" onmouseover="this.style.color='#69C9D0'" onmouseout="this.style.color='var(--ink3)'">
+          <i class="fab fa-tiktok" style="color:#69C9D0"></i> تابعنا على TikTok · @pureform77
+        </a>
+      </div>
+    </div>
+    <div class="cc-grid">
+      <div class="c-tile" onclick="go('beauty')"><i class="fas fa-spa"></i><strong>RZN Beauty</strong><span>عناية طبيعية</span></div>
+      <div class="c-tile" onclick="go('elevate')"><i class="fas fa-dumbbell"></i><strong>Elevate</strong><span>تغذية رياضية</span></div>
+      <div class="c-tile" onclick="go('tips')"><i class="fas fa-bullseye"></i><strong>Tips & Goals</strong><span>خطتك لهدفك</span></div>
+      <div class="c-tile" onclick="window.open('https://www.tiktok.com/@pureform77','_blank')"><i class="fab fa-tiktok" style="color:#69C9D0"></i><strong>TikTok</strong><span>@pureform77</span></div>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ══════════ PRODUCT DETAIL ══════════ */
+function renderProduct(id){
+  const p=PRODUCTS[id];
+  if(!p)return renderHome();
+  const back=ELEVATE.some(x=>x.id===id)?'elevate':'beauty';
+  const revs=REVIEWS[id]||[];
+  const avg=(revs.reduce((a,r)=>a+r.s,0)/revs.length).toFixed(1);
+  const stars5=p.best;
+  const grad=CARD_GRADS[p.id]||'linear-gradient(135deg,#1B4332,#2D6A4F)';
+  const starStr=s=>'★'.repeat(s)+'☆'.repeat(5-s);
+  return`
+<div class="dw">
+  <div class="d-back" onclick="go('${back}')"><i class="fas fa-arrow-right"></i> رجوع</div>
+  <div class="dgrid">
+    <div class="d-imgs">
+      <div class="d-main" style="background:${grad}">
+        ${p.img?`<img class="d-prod-img" src="${p.img}" alt="${p.nm}" loading="lazy">`:''}
+        ${p.em}
+      </div>
+      <div class="d-thumbs">
+        ${['🌿','✨','🍃'].map((e,i)=>`<div class="d-thumb${i===0?' on':''}" onclick="this.parentNode.querySelectorAll('.d-thumb').forEach((t,j)=>t.classList.toggle('on',j==${i}))">${e}</div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="d-kit">${p.kit}</div>
+      <h1 class="d-name">${p.nm}</h1>
+      <div class="d-prow">
+        <span class="d-price">${p.pr.toLocaleString()}</span>
+        <span class="d-orig">${p.orig.toLocaleString()} ج</span>
+        <span class="d-save">وفر ${p.orig-p.pr} جنيه</span>
+      </div>
+      ${p.best?`<div class="d-scar"><span><i class="fas fa-fire"></i> الأكثر مبيعاً</span><span><i class="fas fa-hourglass-half"></i> عرض محدود</span>${stars5?`<span><i class="fas fa-star"></i> تقييم ممتاز</span>`:''}</div>`:''}
+      <div class="d-sec">
+        <div class="d-sch"><i class="fas fa-leaf"></i> المكونات الأساسية</div>
+        <div class="d-tags">${(p.tags||[]).map(t=>`<span class="dtag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="d-sec">
+        <div class="d-sch"><i class="fas fa-check-circle"></i> الفوائد والاستخدام الكامل</div>
+        <div class="d-uses">${(p.uses||[]).map(u=>`<div class="d-use">${u}</div>`).join('')}</div>
+      </div>
+      ${p.macros&&p.macros.length?`
+      <div class="d-sec">
+        <div class="d-sch"><i class="fas fa-chart-bar"></i> القيم الغذائية</div>
+        <div class="d-tags">${p.macros.map(m=>`<span class="dtag" style="background:var(--g800);color:#fff;border:none">${m}</span>`).join('')}</div>
+      </div>`:''}
+
+      <a class="btn btn-wa" href="https://wa.me/201286332777?text=عايز أطلب ${encodeURIComponent(p.nm)}" target="_blank"
+         style="width:100%;justify-content:center;padding:1.1rem;border-radius:var(--r-sm);font-size:1rem;margin-top:1.5rem">
+        <i class="fab fa-whatsapp" style="font-size:1.3rem"></i> اطلب الآن عبر واتساب
+      </a>
+
+      <!-- Reviews -->
+      <div style="margin-top:2rem">
+        <div class="d-sch"><i class="fas fa-star"></i> التقييمات (${revs.length} تقييم)</div>
+        <div class="revs-top">
+          <div class="rev-big-num">${avg}</div>
+          <div class="rev-right">
+            <div class="rev-stars-big">${stars5?'★★★★★':'★★★★☆'}</div>
+            <div class="rev-count">${revs.length} تقييم موثق</div>
+          </div>
+        </div>
+        <div class="revs-list">
+          ${revs.map(r=>`
+          <div class="rev rv">
+            <div class="rev-hdr">
+              <span class="rev-name">${r.n}</span>
+              <span class="rev-stars">${starStr(r.s)}</span>
+            </div>
+            <div class="rev-txt">${r.t}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.3rem;flex-wrap:wrap;gap:.3rem">
+              <span class="rev-date">${r.d}</span>
+              <span class="rev-verified"><i class="fas fa-check-circle"></i> مشتري موثق</span>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:960px;margin-top:3rem">${dlv()}</div>
+</div>`;
+}
+
+/* ══════════ DELIVERY BOX ══════════ */
+function dlv(){
+  return`
+<div class="dlv rv">
+  <h5><i class="fas fa-truck-fast"></i> خدمة الشحن والتوصيل</h5>
+  <div class="dlv-grid">
+    <div class="dlv-it">شحن سريع لجميع محافظات مصر</div>
+    <div class="dlv-it">شحن دولي لأكثر من 16 دولة</div>
+    <div class="dlv-it">تغليف آمن ومحكم</div>
+    <div class="dlv-it">تجهيز سريع للطلبات</div>
+  </div>
+</div>`;
+}
+</script>
+</body>
+</html>
