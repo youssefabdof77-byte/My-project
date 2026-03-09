@@ -60,7 +60,8 @@ img{display:block;max-width:100%}
 @keyframes popupBgIn{from{opacity:0}to{opacity:1}}
 #popup.closing{opacity:0;transition:opacity .3s}
 #popup.gone{display:none}
-.pw{width:min(500px,100%);background:var(--bg2);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5);border:1px solid var(--border);animation:pwIn .6s var(--ease-spring);position:relative}
+/* بعد */
+.pw{width:min(500px,100%);background:var(--bg2);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5);border:1px solid var(--border);animation:pwIn .6s var(--ease-spring);position:relative;max-height:90dvh;display:flex;flex-direction:column}
 @keyframes pwIn{from{opacity:0;transform:scale(.82) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .pw-top{background:linear-gradient(135deg,var(--g900),var(--g700));padding:1.8rem 1.8rem 1.4rem;text-align:center;position:relative;overflow:hidden}
 .pw-top::before{
@@ -76,7 +77,8 @@ img{display:block;max-width:100%}
 .pw-leaf1{top:-5px;right:10px;transform:rotate(20deg);animation-delay:0s}
 .pw-leaf2{bottom:-5px;left:10px;transform:rotate(-30deg);animation-delay:2s}
 @keyframes leafFloat{0%,100%{transform:rotate(20deg) translateY(0)}50%{transform:rotate(25deg) translateY(-6px)}}
-.pw-body{padding:1.8rem 1.6rem 2rem}
+/* بعد */
+.pw-body{padding:1.8rem 1.6rem 2rem;overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--g600) var(--bg3)}
 .sdots{display:flex;justify-content:center;gap:.4rem;margin-bottom:1.6rem}
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--bg4);transition:all .4s var(--ease-spring)}
 .sdot.on{background:var(--g600);width:24px;border-radius:4px;box-shadow:0 0 8px rgba(82,183,136,.5)}
